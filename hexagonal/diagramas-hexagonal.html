@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitetura Hexagonal - Sistema de Avaliações</title>
+    
+    <!-- Mermaid.js para renderizar diagramas -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#E3F2FD',
+                primaryTextColor: '#1565C0',
+                primaryBorder Color: '#1E88E5',
+                lineColor: '#424242',
+                secondaryColor: '#FFF9C4',
+                tertiaryColor: '#F1F8E9'
+            }
+        });
+    </script>
+    
+    <style>
+        /* ===== ESTILOS GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        /* ===== CABEÇALHO ===== */
+        header {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* ===== TÍTULOS DE SEÇÃO ===== */
+        h2 {
+            font-size: 2em;
+            color: #764ba2;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            color: #555;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        /* ===== PARÁGRAFOS E LISTAS ===== */
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin-left: 40px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        /* ===== BOXES DE DESTAQUE ===== */
+        .info-box {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        
+        .info-box.concept {
+            background: #E3F2FD;
+            border-color: #1976D2;
+        }
+        
+        .info-box.problem {
+            background: #FFEBEE;
+            border-color: #D32F2F;
+        }
+        
+        .info-box.solution {
+            background: #E8F5E9;
+            border-color: #388E3C;
+        }
+        
+        .info-box.benefit {
+            background: #FFF9C4;
+            border-color: #F57C00;
+        }
+        
+        .info-box h4 {
+            margin-top: 0;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        /* ===== TABELAS COMPARATIVAS ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* ===== BLOCOS DE CÓDIGO ===== */
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        /* ===== DIAGRAMAS MERMAID ===== */
+        .mermaid {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #e0e0e0;
+        }
+        
+        /* ===== BADGES/ETIQUETAS ===== */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .badge.green {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .badge.red {
+            background: #F44336;
+            color: white;
+        }
+        
+        .badge.blue {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .badge.orange {
+            background: #FF9800;
+            color: white;
+        }
+        
+        /* ===== RODAPÉ ===== */
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 50px;
+            border-top: 2px solid #ddd;
+            color: #777;
+            font-size: 0.9em;
+        }
+        
+        /* ===== IMPRESSÃO ===== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            .mermaid {
+                background: white;
+                border: 1px solid #ccc;
+            }
+        }
+        
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            pre {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== CABEÇALHO ===== -->
+        <header>
+            <h1>🏛️ Arquitetura Hexagonal</h1>
+            <p class="subtitle">Sistema de Avaliação de Trabalhos Acadêmicos</p>
+            <p class="subtitle">Ports & Adapters Pattern</p>
+        </header>
+        
+        <!-- ===== INTRODUÇÃO ===== -->
+        <section id="introducao">
+            <h2>📚 O que é Arquitetura Hexagonal?</h2>
+            
+            <p>
+                A <strong>Arquitetura Hexagonal</strong> (também conhecida como <strong>Ports & Adapters</strong>) 
+                é um padrão arquitetural criado por <strong>Alistair Cockburn</strong> que busca isolar a lógica 
+                de negócio do sistema de seus mecanismos de entrega e infraestrutura.
+            </p>
+            
+            <div class="info-box concept">
+                <h4>🔷 Conceito Principal</h4>
+                <p>
+                    O núcleo da aplicação (Domain + Application) é representado por um <strong>hexágono</strong> 
+                    que possui <strong>portas</strong> (interfaces) através das quais <strong>adaptadores</strong> 
+                    (implementações) podem se conectar.
+                </p>
+                <ul>
+                    <li><strong>🧱 Portas (Ports):</strong> Interfaces que definem pontos de entrada e saída do hexágono</li>
+                    <li><strong>🔌 Adaptadores (Adapters):</strong> Implementações concretas que se conectam às portas</li>
+                    <li><strong>💎 Núcleo (Core):</strong> Domain + Application, 100% independente de tecnologias externas</li>
+                </ul>
+            </div>
+            
+            <h3>🎯 Objetivo</h3>
+            <p>
+                Criar um sistema onde a lógica de negócio seja completamente <strong>independente</strong> de:
+            </p>
+            <ul>
+                <li>Frameworks (Spring, Jakarta EE, etc.)</li>
+                <li>Bancos de dados (SQL, NoSQL, arquivos, etc.)</li>
+                <li>APIs externas</li>
+                <li>Interfaces de usuário (Web, Console, Mobile, etc.)</li>
+            </ul>
+        </section>
+        
+        <!-- ===== PROBLEMA NA ARQUITETURA EM CAMADAS ===== -->
+        <section id="problema">
+            <h2>❌ Problema na Arquitetura em Camadas</h2>
+            
+            <div class="info-box problem">
+                <h4>🔴 Situação Anterior</h4>
+                <p>
+                    Na arquitetura em camadas tradicional, a camada <strong>Application</strong> dependia 
+                    DIRETAMENTE das classes concretas da camada <strong>Infrastructure</strong>.
+                </p>
+            </div>
+            
+            <h3>Estrutura Antiga (Camadas):</h3>
+            <pre><code>src/
+├── presentation/
+│   └── AvaliacaoController.java  (ponto de entrada)
+├── application/
+│   └── GerenciadorAvaliacoes.java  ❌ new TrabalhoRepositorio()
+├── domain/
+│   ├── Aluno.java
+│   ├── Nota.java
+│   └── Trabalho.java
+└── infrastructure/
+    ├── AlunoRepositorio.java  (HashMap - classe concreta)
+    └── TrabalhoRepositorio.java  (HashMap - classe concreta)</code></pre>
+            
+            <h3>🐛 Problemas Identificados:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Problema</th>
+                        <th>Consequência</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge red">❌</span> <strong>Acoplamento Forte</strong></td>
+                        <td>Application conhece detalhes de infraestrutura (HashMap)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge red">❌</span> <strong>Difícil Testar</strong></td>
+                        <td>Não dá para passar mocks ou stubs facilmente</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge red">❌</span> <strong>Inflexível</strong></td>
+                        <td>Trocar HashMap por SQL requer alterar Application</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge red">❌</span> <strong>Viola DIP</strong></td>
+                        <td>Módulo de alto nível depende de módulo de baixo nível</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Código Problemático:</h3>
+            <pre><code>// ❌ ANTES (Arquitetura em Camadas)
+public class GerenciadorAvaliacoes {
+    private TrabalhoRepositorio trabalhoRepo;  // ❌ Classe concreta!
+    private AlunoRepositorio alunoRepo;        // ❌ Classe concreta!
+    
+    public GerenciadorAvaliacoes() {
+        // ❌ Instancia diretamente (acoplamento)
+        trabalhoRepo = new TrabalhoRepositorio();
+        alunoRepo = new AlunoRepositorio();
+    }
+}
+
+// Consequências:
+// - Não dá para trocar por AlunoRepositorioJDBC sem alterar código
+// - Não dá para passar mock nos testes
+// - Application conhece que usa HashMap (detalhe de infraestrutura)</code></pre>
+        </section>
+        
+        <!-- ===== SOLUÇÃO COM HEXAGONAL ===== -->
+        <section id="solucao">
+            <h2>✅ Solução com Arquitetura Hexagonal</h2>
+            
+            <div class="info-box solution">
+                <h4>🟢 Nova Estrutura</h4>
+                <p>
+                    Com Hexagonal, <strong>invertemos as dependências</strong>: Application depende de 
+                    <strong>interfaces (Ports)</strong>, e os Adapters <strong>implementam</strong> essas interfaces.
+                </p>
+            </div>
+            
+            <h3>Nova Estrutura (Hexagonal):</h3>
+            <pre><code>src/
+├── adapters/
+│   ├── input/
+│   │   └── AvaliacaoController.java  (Driving Adapter - Console)
+│   └── output/
+│       ├── AlunoRepositorioMemoria.java  (Driven Adapter - implementa IAlunoRepositorio)
+│       └── TrabalhoRepositorioMemoria.java  (Driven Adapter - implementa ITrabalhoRepositorio)
+├── application/
+│   └── GerenciadorAvaliacoes.java  ✅ implements IGerenciadorAvaliacoes
+└── domain/
+    ├── model/
+    │   ├── Aluno.java  (entidade)
+    │   ├── Nota.java  (entidade)
+    │   └── Trabalho.java  (entidade)
+    └── ports/
+        ├── input/
+        │   └── IGerenciadorAvaliacoes.java  (Driving Port - interface de entrada)
+        └── output/
+            ├── IAlunoRepositorio.java  (Driven Port - interface de saída)
+            └── ITrabalhoRepositorio.java  (Driven Port - interface de saída)</code></pre>
+            
+            <h3>✨ Benefícios Obtidos:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Benefício</th>
+                        <th>Como Funciona</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge green">✅</span> <strong>Inversão de Dependência</strong></td>
+                        <td>Application depende de INTERFACES, não de classes concretas</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge green">✅</span> <strong>Fácil de Testar</strong></td>
+                        <td>Injetar mocks das interfaces no construtor do Application</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge green">✅</span> <strong>Flexibilidade</strong></td>
+                        <td>Trocar HashMap por SQL sem alterar uma linha no Application</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge green">✅</span> <strong>Respeita SOLID</strong></td>
+                        <td>Dependency Inversion Principle (DIP) aplicado corretamente</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Código Melhorado:</h3>
+            <pre><code>// ✅ DEPOIS (Arquitetura Hexagonal)
+public class GerenciadorAvaliacoes implements IGerenciadorAvaliacoes {
+    private ITrabalhoRepositorio trabalhoRepo;  // ✅ Interface!
+    private IAlunoRepositorio alunoRepo;        // ✅ Interface!
+    
+    // ✅ Recebe dependências via construtor (Dependency Injection)
+    public GerenciadorAvaliacoes(ITrabalhoRepositorio trabalhoRepo, 
+                                  IAlunoRepositorio alunoRepo) {
+        this.trabalhoRepo = trabalhoRepo;
+        this.alunoRepo = alunoRepo;
+    }
+}
+
+// No Controller (Driving Adapter):
+// ✅ Controller decide qual implementação usar
+IAlunoRepositorio alunoRepo = new AlunoRepositorioMemoria();
+
+// ✅ Para produção, trocar por:
+// IAlunoRepositorio alunoRepo = new AlunoRepositorioJDBC(conexao);
+
+// ✅ Para testes, injetar mock:
+// IAlunoRepositorio alunoRepo = mock(IAlunoRepositorio.class);
+
+IGerenciadorAvaliacoes gerenciador = new GerenciadorAvaliacoes(trabalhoRepo, alunoRepo);
+// ✅ Application não sabe qual implementação está usando!</code></pre>
+        </section>
+        
+        <!-- ===== DIAGRAMA DE COMPONENTES ===== -->
+        <section id="diagrama-componentes">
+            <h2>📊 Diagrama de Componentes (Hexagonal)</h2>
+            
+            <p>
+                Este diagrama mostra a estrutura completa do sistema com as setas de dependência 
+                <strong>apontando para o NÚCLEO</strong> (Domain). Note como os Adapters dependem do Domain, 
+                nunca o contrário!
+            </p>
+            
+            <div class="mermaid">
+flowchart TD
+    subgraph DRIVING["🟦 DRIVING ADAPTERS (Entrada)"]
+        CTRL["AvaliacaoController<br/>(Console/Main)"]
+    end
+    
+    subgraph APPLICATION["🟩 APPLICATION CORE"]
+        IGEST["&lt;&lt;interface&gt;&gt;<br/>IGerenciadorAvaliacoes"]
+        GEREN["GerenciadorAvaliacoes<br/>implements IGerenciadorAvaliacoes"]
+    end
+    
+    subgraph DOMAIN["🟨 DOMAIN (Núcleo Hexagonal)"]
+        direction TB
+        subgraph PORTS["PORTS (Interfaces)"]
+            IAREPO["&lt;&lt;interface&gt;&gt;<br/>IAlunoRepositorio"]
+            ITREPO["&lt;&lt;interface&gt;&gt;<br/>ITrabalhoRepositorio"]
+        end
+        subgraph MODEL["MODEL (Entidades)"]
+            ALUNO["Aluno"]
+            TRABALHO["Trabalho"]
+            NOTA["Nota"]
+        end
+    end
+    
+    subgraph DRIVEN["🟥 DRIVEN ADAPTERS (Saída)"]
+        ALUNO_REPO["AlunoRepositorioMemoria<br/>implements IAlunoRepositorio"]
+        TRAB_REPO["TrabalhoRepositorioMemoria<br/>implements ITrabalhoRepositorio"]
+    end
+    
+    CTRL -->|"chama"| IGEST
+    IGEST -.->|"implementado por"| GEREN
+    GEREN -->|"depende da interface"| IAREPO
+    GEREN -->|"depende da interface"| ITREPO
+    GEREN -->|"usa entidades"| ALUNO
+    GEREN -->|"usa entidades"| TRABALHO
+    GEREN -->|"usa entidades"| NOTA
+    IAREPO -.->|"✅ IMPLEMENTADO POR"| ALUNO_REPO
+    ITREPO -.->|"✅ IMPLEMENTADO POR"| TRAB_REPO
+    
+    style IAREPO stroke:#27AE60,stroke-width:4px,stroke-dasharray:5 5
+    style ITREPO stroke:#27AE60,stroke-width:4px,stroke-dasharray:5 5
+    style IGEST stroke:#27AE60,stroke-width:4px,stroke-dasharray:5 5
+    style DOMAIN fill:#FFF9C4
+    style APPLICATION fill:#E8F5E9
+    style DRIVING fill:#E3F2FD
+    style DRIVEN fill:#FFEBEE
+            </div>
+            
+            <div class="info-box concept">
+                <h4>🔍 Entendendo o Diagrama</h4>
+                <ul>
+                    <li><strong>🟦 Driving Adapters (Azul):</strong> Entrada do sistema (Controller, API REST, CLI)</li>
+                    <li><strong>🟩 Application (Verde):</strong> Orquestra os casos de uso, implementa lógica de aplicação</li>
+                    <li><strong>🟨 Domain (Amarelo):</strong> Núcleo do hexágono - Entidades e Ports (100% independente)</li>
+                    <li><strong>🟥 Driven Adapters (Vermelho):</strong> Saída do sistema (Persistência, APIs externas)</li>
+                    <li><strong style="color: #27AE60">Linhas Verdes:</strong> Interfaces (Ports) - pontos de inversão de dependência</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- ===== DIAGRAMA DE SEQUÊNCIA ===== -->
+        <section id="diagrama-sequencia">
+            <h2>⏱️ Diagrama de Sequência</h2>
+            
+            <p>
+                Este diagrama mostra o fluxo de execução ao avaliar um trabalho. Note como todas as chamadas 
+                passam por <strong>interfaces</strong>, nunca por classes concretas!
+            </p>
+            
+            <div class="mermaid">
+sequenceDiagram
+    participant Controller as AvaliacaoController<br/>(Driving Adapter)
+    participant IGeren as IGerenciadorAvaliacoes<br/>(Driving Port)
+    participant Geren as GerenciadorAvaliacoes<br/>(Application)
+    participant ITrabRepo as ITrabalhoRepositorio<br/>(Driven Port)
+    participant TrabRepo as TrabalhoRepositorioMemoria<br/>(Driven Adapter)
+    participant Trabalho as Trabalho<br/>(Domain Entity)
+    
+    Controller->>IGeren: avaliarTrabalho("n1", "t1", "a2", 8.5)
+    Note over Controller,IGeren: 🔄 Chama INTERFACE,<br/>não classe concreta
+    IGeren->>Geren: avaliarTrabalho(...)
+    Geren->>ITrabRepo: buscarPorId("t1")
+    Note over Geren,ITrabRepo: 🔄 Depende de INTERFACE,<br/>não de implementação
+    ITrabRepo->>TrabRepo: buscarPorId("t1")
+    TrabRepo-->>ITrabRepo: trabalho
+    ITrabRepo-->>Geren: trabalho
+    Geren->>Trabalho: adicionarNota(nota)
+    Trabalho-->>Geren: void
+    Geren->>ITrabRepo: salvar(trabalho)
+    ITrabRepo->>TrabRepo: salvar(trabalho)
+    TrabRepo-->>ITrabRepo: void
+    ITrabRepo-->>Geren: void
+    Geren-->>IGeren: void
+    IGeren-->>Controller: void
+    
+    Note over Controller,TrabRepo: ✅ INVERSÃO DE DEPENDÊNCIA:<br/>Application depende de INTERFACES,<br/>Adapters IMPLEMENTAM interfaces
+            </div>
+            
+            <div class="info-box benefit">
+                <h4>💡 Pontos-Chave no Fluxo</h4>
+                <ol>
+                    <li><strong>Controller chama IGerenciadorAvaliacoes (interface)</strong>, não a classe concreta</li>
+                    <li><strong>Application usa ITrabalhoRepositorio (interface)</strong>, não a implementação em memória</li>
+                    <li><strong>Polimorfismo em ação:</strong> JVM resolve qual implementação usar em runtime</li>
+                    <li><strong>Fácil trocar:</strong> Mudar AlunoRepositorioMemoria para AlunoRepositorioJDBC → sem alterar Application!</li>
+                </ol>
+            </div>
+        </section>
+        
+        <!-- ===== COMPARAÇÃO CAMADAS vs HEXAGONAL ===== -->
+        <section id="comparacao">
+            <h2>⚖️ Comparação: Camadas vs Hexagonal</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30%">Aspecto</th>
+                        <th style="width: 35%">Arquitetura em Camadas</th>
+                        <th style="width: 35%">Arquitetura Hexagonal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dependências</strong></td>
+                        <td><span class="badge red">❌</span> Application → TrabalhoRepositorio (classe)</td>
+                        <td><span class="badge green">✅</span> Application → ITrabalhoRepositorio (interface)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Acoplamento</strong></td>
+                        <td><span class="badge red">❌</span> Alto (conhece implementação)</td>
+                        <td><span class="badge green">✅</span> Baixo (conhece só interface)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Testabilidade</strong></td>
+                        <td><span class="badge red">❌</span> Difícil (não passa mock)</td>
+                        <td><span class="badge green">✅</span> Fácil (injeta mock)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trocar Tecnologia</strong></td>
+                        <td><span class="badge red">❌</span> Requer alterar Application</td>
+                        <td><span class="badge green">✅</span> Só trocar Adapter</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DIP (SOLID)</strong></td>
+                        <td><span class="badge red">❌</span> Viola Dependency Inversion</td>
+                        <td><span class="badge green">✅</span> Respeita DIP</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Independência</strong></td>
+                        <td><span class="badge red">❌</span> Application conhece infraestrutura</td>
+                        <td><span class="badge green">✅</span> Núcleo 100% independente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Múltiplos Adapters</strong></td>
+                        <td><span class="badge orange">⚠️</span> Difícil adicionar</td>
+                        <td><span class="badge green">✅</span> Trivial (implementar interface)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <!-- ===== BENEFÍCIOS DA INVERSÃO DE DEPENDÊNCIA ===== -->
+        <section id="beneficios">
+            <h2>🔄 Benefícios da Inversão de Dependência</h2>
+            
+            <div class="info-box benefit">
+                <h4>🎯 Dependency Inversion Principle (DIP)</h4>
+                <p>
+                    <em>"Módulos de alto nível não devem depender de módulos de baixo nível. 
+                    Ambos devem depender de abstrações."</em>
+                </p>
+            </div>
+            
+            <h3>1️⃣ Facilidade para Trocar Implementações</h3>
+            <pre><code>// No AvaliacaoController (Driving Adapter):
+
+// === DESENVOLVIMENTO (rápido, volátil) ===
+IAlunoRepositorio alunoRepo = new AlunoRepositorioMemoria();
+
+// === PRODUÇÃO (persistente, escalável) ===
+Connection conexao = DriverManager.getConnection("jdbc:postgresql://...");
+IAlunoRepositorio alunoRepo = new AlunoRepositorioJDBC(conexao);
+
+// === TESTES (mock, isolado) ===
+IAlunoRepositorio alunoRepo = mock(IAlunoRepositorio.class);
+when(alunoRepo.buscarPorId("a1")).thenReturn(new Aluno("a1", "Mock"));
+
+// ===  APPLICATION NÃO MUDA! ===
+IGerenciadorAvaliacoes gerenciador = new GerenciadorAvaliacoes(trabalhoRepo, alunoRepo);
+gerenciador.cadastrarTrabalho(...);  // Funciona com qualquer implementação!</code></pre>
+            
+            <h3>2️⃣ Testabilidade Simplificada</h3>
+            <p>Com interfaces, criar testes unitários é <strong>trivial</strong>:</p>
+            <pre><code>@Test
+public void deveAvaliarTrabalhoCorretamente() {
+    // 1. Criar mocks das interfaces (fácil!)
+    ITrabalhoRepositorio mockTrabRepo = mock(ITrabalhoRepositorio.class);
+    IAlunoRepositorio mockAlunoRepo = mock(IAlunoRepositorio.class);
+    
+    // 2. Configurar comportamento dos mocks
+    Aluno autor = new Aluno("a1", "Alice");
+    Aluno avaliador = new Aluno("a2", "Bob");
+    Trabalho trabalho = new Trabalho("t1", "Título", autor);
+    
+    when(mockTrabRepo.buscarPorId("t1")).thenReturn(trabalho);
+    when(mockAlunoRepo.buscarPorId("a2")).thenReturn(avaliador);
+    
+    // 3. Injetar mocks no Application (inversão de dependência!)
+    IGerenciadorAvaliacoes gerenciador = new GerenciadorAvaliacoes(mockTrabRepo, mockAlunoRepo);
+    
+    // 4. Testar caso de uso SEM banco de dados real!
+    gerenciador.avaliarTrabalho("n1", "t1", "a2", 8.5);
+    
+    // 5. Verificar que o método foi chamado
+    verify(mockTrabRepo).salvar(trabalho);
+    
+    // ✅ Teste rápido, isolado, sem dependências externas!
+}</code></pre>
+            
+            <h3>3️⃣ Múltiplas Implementações Coexistem</h3>
+            <p>Podemos ter várias implementações da mesma interface:</p>
+            <ul>
+                <li><strong>AlunoRepositorioMemoria:</strong> HashMap (desenvolvimento/testes)</li>
+                <li><strong>AlunoRepositorioJDBC:</strong> PostgreSQL (produção)</li>
+                <li><strong>AlunoRepositorioJPA:</strong> Hibernate/JPA (enterprise)</li>
+                <li><strong>AlunoRepositorioMongo:</strong> MongoDB (NoSQL)</li>
+                <li><strong>AlunoRepositorioCache:</strong> Redis (cache distribuído)</li>
+                <li><strong>AlunoRepositorioREST:</strong> API externa (integração)</li>
+            </ul>
+            
+            <p><strong>O melhor:</strong> Application não muda! Só mudamos qual Adapter injetamos.</p>
+            
+            <h3>4️⃣ Decorator Pattern (Empilhar Funcionalidades)</h3>
+            <p>Podemos criar Adapters que decoram outros Adapters:</p>
+            <pre><code>// Adapter com cache (decora outro adapter)
+public class AlunoRepositorioComCache implements IAlunoRepositorio {
+    private IAlunoRepositorio delegado;  // Outro adapter!
+    private Cache cache;
+    
+    public AlunoRepositorioComCache(IAlunoRepositorio delegado, Cache cache) {
+        this.delegado = delegado;
+        this.cache = cache;
+    }
+    
+    @Override
+    public Aluno buscarPorId(String id) {
+        // 1. Tentar buscar no cache
+        Aluno cached = cache.get("aluno:" + id);
+        if (cached != null) {
+            System.out.println("✅ Cache HIT!");
+            return cached;
+        }
+        
+        // 2. Se não tiver no cache, buscar no repositório real
+        System.out.println("❌ Cache MISS, buscando no DB...");
+        Aluno aluno = delegado.buscarPorId(id);
+        
+        // 3. Armazenar no cache para próximas buscas
+        if (aluno != null) {
+            cache.put("aluno:" + id, aluno, 300);  // TTL 5 min
+        }
+        
+        return aluno;
+    }
+    
+    // ... outros métodos delegam para 'delegado' ...
+}
+
+// No Controller, empilhar Adapters:
+IAlunoRepositorio repoBasico = new AlunoRepositorioJDBC(conexao);
+IAlunoRepositorio repoComCache = new AlunoRepositorioComCache(repoBasico, redisCache);
+IAlunoRepositorio repoComLog = new AlunoRepositorioComLogging(repoComCache);
+
+IGerenciadorAvaliacoes gerenciador = new GerenciadorAvaliacoes(trabalhoRepo, repoComLog);
+// ✅ Application não sabe que tem cache + logging! Transparente!</code></pre>
+        </section>
+        
+        <!-- ===== EXEMPLO DE TESTE UNITÁRIO ===== -->
+        <section id="teste-exemplo">
+            <h2>🧪 Exemplo de Teste Unitário</h2>
+            
+            <p>
+                Um dos maiores benefícios da Arquitetura Hexagonal é a <strong>facilidade de testes</strong>. 
+                Veja como é simples testar o Application sem depender de banco de dados:
+            </p>
+            
+            <h3>Teste com Mocks (Mockito):</h3>
+            <pre><code>import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class GerenciadorAvaliacoesTest {
+    
+    @Test
+    public void deveCalcularMediaDeDuasNotasCorretamente() {
+        // === ARRANGE (Preparar) ===
+        
+        // 1. Criar mocks das interfaces (simples!)
+        ITrabalhoRepositorio mockTrabRepo = mock(ITrabalhoRepositorio.class);
+        IAlunoRepositorio mockAlunoRepo = mock(IAlunoRepositorio.class);
+        
+        // 2. Criar entidades de teste
+        Aluno autor = new Aluno("a1", "Alice");
+        Aluno avaliador1 = new Aluno("a2", "Bob");
+        Aluno avaliador2 = new Aluno("a3", "Carol");
+        Trabalho trabalho = new Trabalho("t1", "Arquitetura Hexagonal", autor);
+        
+        // 3. Configurar comportamento dos mocks
+        when(mockTrabRepo.buscarPorId("t1")).thenReturn(trabalho);
+        when(mockAlunoRepo.buscarPorId("a2")).thenReturn(avaliador1);
+        when(mockAlunoRepo.buscarPorId("a3")).thenReturn(avaliador2);
+        
+        // 4. Injetar mocks no Application (INVERSÃO DE DEPENDÊNCIA!)
+        IGerenciadorAvaliacoes gerenciador = new GerenciadorAvaliacoes(mockTrabRepo, mockAlunoRepo);
+        
+        // === ACT (Agir) ===
+        
+        // 5. Executar casos de uso SEM banco real!
+        gerenciador.avaliarTrabalho("n1", "t1", "a2", 9.0);
+        gerenciador.avaliarTrabalho("n2", "t1", "a3", 7.0);
+        double media = gerenciador.consultarMedia("t1");
+        
+        // === ASSERT (Verificar) ===
+        
+        // 6. Verificar resultado
+        assertEquals(8.0, media, 0.01, "Média de 9.0 e 7.0 deve ser 8.0");
+        
+        // 7. Verificar que repositório foi chamado (optional)
+        verify(mockTrabRepo, times(3)).buscarPorId("t1");  // 2x avaliar + 1x consultar
+        verify(mockTrabRepo, times(2)).salvar(trabalho);   // 2x ao avaliar
+        
+        // ✅ Teste passou! Sem banco de dados, sem infraestrutura!
+    }
+    
+    @Test
+    public void deveLancarExcecaoSeTrabalhoNaoExistir() {
+        // === ARRANGE ===
+        ITrabalhoRepositorio mockTrabRepo = mock(ITrabalhoRepositorio.class);
+        IAlunoRepositorio mockAlunoRepo = mock(IAlunoRepositorio.class);
+        
+        // Simular que trabalho NÃO existe
+        when(mockTrabRepo.buscarPorId("t999")).thenReturn(null);
+        
+        IGerenciadorAvaliacoes gerenciador = new GerenciadorAvaliacoes(mockTrabRepo, mockAlunoRepo);
+        
+        // === ACT & ASSERT ===
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            gerenciador.consultarMedia("t999");
+        });
+        
+        assertTrue(exception.getMessage().contains("não encontrado"));
+        
+        // ✅ Validação funcionou corretamente!
+    }
+}
+
+// ✅ VANTAGENS DESSES TESTES:
+// - Rápidos (sem I/O, sem banco)
+// - Isolados (não dependem de estado externo)
+// - Determinísticos (sempre mesmo resultado)
+// - Fáceis de escrever (mocks triviais)
+
+// ❌ NA ARQUITETURA EM CAMADAS:
+// Esses testes seriam IMPOSSÍVEIS ou muito mais difíceis!
+// Application instanciava repositórios internamente → não dava para passar mocks.</code></pre>
+            
+            <div class="info-box solution">
+                <h4>✅ Por que isso só é possível com Hexagonal?</h4>
+                <p>
+                    Na arquitetura em camadas, <strong>GerenciadorAvaliacoes instanciava os repositórios dentro dele</strong>:
+                </p>
+                <pre><code>// ❌ Camadas - NÃO dá para testar facilmente
+public class GerenciadorAvaliacoes {
+    private TrabalhoRepositorio repo = new TrabalhoRepositorio();  // ❌ Hardcoded!
+    // Não dá para passar mock!
+}</code></pre>
+                <p>
+                    Com Hexagonal, <strong>recebemos interfaces via construtor</strong> (Dependency Injection):
+                </p>
+                <pre><code>// ✅ Hexagonal - FÁCIL testar
+public class GerenciadorAvaliacoes {
+    private ITrabalhoRepositorio repo;
+    
+    public GerenciadorAvaliacoes(ITrabalhoRepositorio repo) {  // ✅ Injeção!
+        this.repo = repo;
+    }
+}
+// Agora podemos passar mocks nos testes!</code></pre>
+            </div>
+        </section>
+        
+        <!-- ===== RESUMO ===== -->
+        <section id="resumo">
+            <h2>📝 Resumo: Camadas → Hexagonal</h2>
+            
+            <div class="info-box concept">
+                <h4>🔄 A Grande Mudança</h4>
+                <p>
+                    A transição de Arquitetura em Camadas para Hexagonal é essencialmente sobre 
+                    <strong>INVERTER DEPENDÊNCIAS</strong> usando <strong>INTERFACES</strong>.
+                </p>
+            </div>
+            
+            <h3>📐 Estrutura:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Camada</th>
+                        <th>O que mudou</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Domain (Model)</strong></td>
+                        <td>✅ Mantido igual (Aluno, Trabalho, Nota)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Domain (Ports)</strong></td>
+                        <td>🆕 NOVIDADE! Interfaces (IAlunoRepositorio, ITrabalhoRepositorio, IGerenciadorAvaliacoes)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Application</strong></td>
+                        <td>🔄 Agora IMPLEMENTA interface e DEPENDE de interfaces (não de classes concretas)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adapters (Output)</strong></td>
+                        <td>🔄 Repositórios agora IMPLEMENTAM interfaces do Domain</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adapters (Input)</strong></td>
+                        <td>🔄 Controller agora INJETA dependências e chama interfaces</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>🎯 Checklist de Conversão:</h3>
+            <ul>
+                <li><span class="badge green">✅</span> Criar interfaces (Ports) no Domain</li>
+                <li><span class="badge green">✅</span> Application implementa Driving Port (IGerenciadorAvaliacoes)</li>
+                <li><span class="badge green">✅</span> Application depende de Driven Ports (IAlunoRepositorio, ITrabalhoRepositorio)</li>
+                <li><span class="badge green">✅</span> Repositórios implementam Driven Ports</li>
+                <li><span class="badge green">✅</span> Controller injeta Adapters no Application</li>
+                <li><span class="badge green">✅</span> Controller chama Application através da Driving Port</li>
+            </ul>
+            
+            <h3>🏆 Resultado Final:</h3>
+            <ul>
+                <li>✅ Domain 100% independente de tecnologias</li>
+                <li>✅ Application facilmente testável (mocks)</li>
+                <li>✅ Adapters intercambiáveis (trocar HashMap por SQL)</li>
+                <li>✅ SOLID principles respeitados (especialmente DIP)</li>
+                <li>✅ Sistema flexível e manutenível</li>
+            </ul>
+        </section>
+        
+        <!-- ===== RODAPÉ ===== -->
+        <footer>
+            <p><strong>Sistema de Avaliação de Trabalhos Acadêmicos</strong></p>
+            <p>Arquitetura Hexagonal (Ports & Adapters Pattern)</p>
+            <p>Exemplo Didático - Faccat - Arquitetura de Software</p>
+            <p>&copy; 2026 - Desenvolvido para fins educacionais</p>
+        </footer>
+    </div>
+</body>
+</html>

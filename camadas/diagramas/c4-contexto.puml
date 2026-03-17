@@ -1,0 +1,13 @@
+@startuml c4-contexto
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Diagrama de Contexto - Sistema de Avaliação de Apresentações
+
+Person(aluno, "Aluno", "Faz apresentações e avalia\napresentações de colegas\ncom notas de 0 a 10")
+
+System(sistema, "Sistema de Avaliação\nde Apresentações", "Permite cadastrar alunos,\nregistrar apresentações,\nreceber avaliações e\ncalcular a média das notas")
+
+Rel(aluno, sistema, "Cadastra apresentações,\ndá notas e consulta médias")
+
+SHOW_LEGEND()
+@enduml

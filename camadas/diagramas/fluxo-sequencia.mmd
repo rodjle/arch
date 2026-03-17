@@ -1,0 +1,58 @@
+sequenceDiagram
+    autonumber
+    participant U as 👤 Usuário
+    box rgb(74,144,217) Camada Presentation
+        participant C as AvaliacaoController
+    end
+    box rgb(39,174,96) Camada Application
+        participant G as GerenciadorAvaliacoes
+    end
+    box rgb(231,76,60) Camada Infrastructure
+        participant AR as AlunoRepositorio
+        participant TR as TrabalhoRepositorio
+    end
+    box rgb(243,156,18) Camada Domain
+        participant A as Aluno
+        participant T as Trabalho
+        participant N as Nota
+    end
+
+    Note over U,N: 📋 CASO DE USO 1: Cadastrar Trabalho
+
+    U->>C: cadastrar trabalho
+    C->>G: cadastrarTrabalho(id, titulo, alunoId)
+    G->>AR: buscarPorId(alunoId)
+    AR-->>G: retorna Aluno
+    G->>T: new Trabalho(id, titulo, autor)
+    Note over T: Entidade criada no Domínio
+    G->>TR: salvar(trabalho)
+    TR-->>G: salvo ✅
+    G-->>C: concluído
+    C-->>U: exibe confirmação
+
+    Note over U,N: 📋 CASO DE USO 2: Avaliar Trabalho
+
+    U->>C: avaliar trabalho
+    C->>G: avaliarTrabalho(notaId, trabalhoId, alunoId, valor)
+    G->>TR: buscarPorId(trabalhoId)
+    TR-->>G: retorna Trabalho
+    G->>AR: buscarPorId(avaliadorId)
+    AR-->>G: retorna Aluno (avaliador)
+    G->>N: new Nota(id, avaliador, valor)
+    Note over N: ✅ Valida valor entre 0 e 10
+    G->>T: adicionarNota(nota)
+    Note over T: Nota adicionada à lista
+    G-->>C: concluído
+    C-->>U: exibe confirmação
+
+    Note over U,N: 📋 CASO DE USO 3: Consultar Média
+
+    U->>C: consultar média
+    C->>G: consultarMedia(trabalhoId)
+    G->>TR: buscarPorId(trabalhoId)
+    TR-->>G: retorna Trabalho
+    G->>T: calcularMedia()
+    Note over T: 📐 Regra de negócio no Domínio!<br/>soma dos valores / quantidade
+    T-->>G: retorna 8.17
+    G-->>C: retorna média
+    C-->>U: exibe { "media": 8.17 }

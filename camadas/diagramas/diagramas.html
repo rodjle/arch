@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas - Arquitetura em Camadas</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+        }
+        .diagram-container {
+            background-color: white;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .instructions {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .problem-alert {
+            background-color: #ffe6e6;
+            border-left: 4px solid #c0392b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .problem-alert h3 {
+            color: #c0392b;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .problem-alert ul {
+            margin-bottom: 0;
+        }
+        .solution-box {
+            background-color: #e8f8e8;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        .solution-box h4 {
+            color: #27ae60;
+            margin-top: 0;
+        }
+        /* Aumenta tamanho dos textos no diagrama de sequência */
+        .mermaid text {
+            font-size: 16px !important;
+            font-weight: bold !important;
+        }
+        .mermaid .actor text {
+            font-size: 18px !important;
+            font-weight: bold !important;
+        }
+        .mermaid .messageText {
+            font-size: 15px !important;
+            font-weight: 600 !important;
+        }
+        .mermaid .labelText {
+            font-size: 16px !important;
+            font-weight: bold !important;
+        }
+        .mermaid .noteText {
+            font-size: 15px !important;
+            font-weight: 600 !important;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .diagram-container {
+                box-shadow: none;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .instructions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Diagramas da Arquitetura em Camadas</h1>
+    <p><strong>Sistema de Avaliação de Trabalhos</strong></p>
+    
+    <div class="problem-alert" style="background-color: #e8f4f8; border-left: 4px solid #3498db;">
+        <h3 style="color: #2c3e50; margin-top: 0;">📋 O QUE O SISTEMA FAZ?</h3>
+        <p style="font-size: 1.1em; margin-bottom: 15px;">Este é um sistema educacional que permite avaliar trabalhos apresentados por alunos. Funciona assim:</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background-color: white;">
+            <tr>
+                <td style="padding: 15px; border: 2px solid #3498db; vertical-align: top; width: 40px; text-align: center; font-size: 24px;">
+                    👤
+                </td>
+                <td style="padding: 15px; border: 2px solid #3498db;">
+                    <strong style="font-size: 1.1em;">Alunos</strong><br/>
+                    São cadastrados no sistema com ID e nome
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 2px solid #3498db; vertical-align: top; text-align: center; font-size: 24px;">
+                    📝
+                </td>
+                <td style="padding: 15px; border: 2px solid #3498db;">
+                    <strong style="font-size: 1.1em;">Apresentação de Trabalhos</strong><br/>
+                    Um aluno apresenta um trabalho (ex: "Arquitetura em Camadas")
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 2px solid #3498db; vertical-align: top; text-align: center; font-size: 24px;">
+                    ⭐
+                </td>
+                <td style="padding: 15px; border: 2px solid #3498db;">
+                    <strong style="font-size: 1.1em;">Avaliação por Colegas</strong><br/>
+                    Outros alunos dão <strong>notas de 0 a 10</strong> para o trabalho apresentado<br/>
+                    <em style="color: #c0392b;">→ Validação: a nota deve estar entre 0 e 10 (regra de negócio!)</em>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 2px solid #3498db; vertical-align: top; text-align: center; font-size: 24px;">
+                    📊
+                </td>
+                <td style="padding: 15px; border: 2px solid #3498db;">
+                    <strong style="font-size: 1.1em;">Cálculo da Média</strong><br/>
+                    O sistema calcula a <strong>média das notas</strong> recebidas por um trabalho<br/>
+                    <em style="color: #27ae60;">→ Regra: soma das notas ÷ quantidade de avaliações</em>
+                </td>
+            </tr>
+        </table>
+
+        <div style="background-color: white; padding: 15px; border-radius: 4px; margin-top: 15px; border-left: 4px solid #f39c12;">
+            <strong style="color: #f39c12; font-size: 1.1em;">🎯 EXEMPLO PRÁTICO (rodando no código):</strong>
+            <ol style="margin: 10px 0; font-size: 1.05em;">
+                <li><strong>Alice</strong> apresenta o trabalho "Arquitetura em Camadas"</li>
+                <li><strong>Bob</strong> avalia e dá nota <strong>8.5</strong></li>
+                <li><strong>Carol</strong> avalia e dá nota <strong>9.0</strong></li>
+                <li><strong>Alice</strong> (pode avaliar o próprio trabalho) dá nota <strong>7.0</strong></li>
+                <li>Sistema calcula a média: <strong>(8.5 + 9.0 + 7.0) ÷ 3 = 8.17</strong> ✅</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <strong>💡 Como usar este arquivo:</strong>
+        <ul>
+            <li><strong>Salvar como imagem:</strong> Clique com botão direito sobre o diagrama → "Salvar imagem como..."</li>
+            <li><strong>Imprimir para PDF:</strong> Ctrl+P → Escolher "Salvar como PDF"</li>
+            <li><strong>Screenshot:</strong> Use Win+Shift+S para capturar uma região</li>
+        </ul>
+    </div>
+
+    <h2>🏗️ Diagrama de Componentes - Arquitetura em Camadas</h2>
+    <p>Este diagrama mostra os componentes de cada camada e suas relações:</p>
+    <div class="diagram-container">
+        <pre class="mermaid">
+flowchart TD
+
+    subgraph PRESENTATION["🟦 CAMADA PRESENTATION"]
+        direction TB
+        CTRL["<b>AvaliacaoController</b><br/><i>Ponto de entrada do sistema</i><br/>main()"]
+    end
+
+    subgraph APPLICATION["🟩 CAMADA APPLICATION"]
+        direction TB
+        GEREN["<b>GerenciadorAvaliacoes</b><br/><i>Orquestra os casos de uso</i><br/>cadastrarTrabalho()<br/>avaliarTrabalho()<br/>consultarMedia()"]
+    end
+
+    subgraph DOMAIN["🟨 CAMADA DOMAIN"]
+        direction LR
+        ALUNO["<b>Aluno</b><br/><i>Entidade</i><br/>id, nome<br/>✅ Valida nome ≠ vazio"]
+        TRABALHO["<b>Trabalho</b><br/><i>Entidade Central</i><br/>id, titulo, autor<br/>List&lt;Nota&gt;<br/>📐 calcularMedia()"]
+        NOTA["<b>Nota</b><br/><i>Entidade</i><br/>id, avaliador, valor<br/>✅ Valida valor 0-10"]
+    end
+
+    subgraph INFRASTRUCTURE["🟥 CAMADA INFRASTRUCTURE"]
+        direction LR
+        ALUNO_REPO["<b>AlunoRepositorio</b><br/><i>Persistência</i><br/>HashMap em memória<br/>salvar() buscarPorId()<br/>listarTodos()"]
+        TRAB_REPO["<b>TrabalhoRepositorio</b><br/><i>Persistência</i><br/>HashMap em memória<br/>salvar() buscarPorId()<br/>listarTodos()"]
+    end
+
+    CTRL -->|"chama casos de uso"| GEREN
+    GEREN -->|"cria e usa entidades"| TRABALHO
+    GEREN -->|"cria notas"| NOTA
+    GEREN -->|"busca alunos"| ALUNO
+    GEREN -.->|"☠️ PROBLEMA!<br/>Depende de implementação concreta"| ALUNO_REPO
+    GEREN -.->|"☠️ PROBLEMA!<br/>Depende de implementação concreta"| TRAB_REPO
+    TRABALHO -.->|"contém lista de"| NOTA
+    TRABALHO -.->|"referencia autor"| ALUNO
+    NOTA -.->|"referencia avaliador"| ALUNO
+    ALUNO_REPO -.->|"persiste"| ALUNO
+    TRAB_REPO -.->|"persiste"| TRABALHO
+
+    style PRESENTATION fill:#4A90D9,stroke:#2C5F8A,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style APPLICATION fill:#27AE60,stroke:#1B7A43,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style DOMAIN fill:#F39C12,stroke:#C67D0A,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style INFRASTRUCTURE fill:#E74C3C,stroke:#A93226,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+
+    style CTRL fill:#85C1E9,stroke:#2C5F8A,stroke-width:2px,color:#1A1A1A
+    style GEREN fill:#82E0AA,stroke:#1B7A43,stroke-width:2px,color:#1A1A1A
+    style ALUNO fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style TRABALHO fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style NOTA fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style ALUNO_REPO fill:#F1948A,stroke:#A93226,stroke-width:2px,color:#1A1A1A
+    style TRAB_REPO fill:#F1948A,stroke:#A93226,stroke-width:2px,color:#1A1A1A
+
+    linkStyle 4 stroke:#C0392B,stroke-width:4px,stroke-dasharray:5 5
+    linkStyle 5 stroke:#C0392B,stroke-width:4px,stroke-dasharray:5 5
+        </pre>
+    </div>
+
+    <div class="problem-alert">
+        <h3>☠️ PROBLEMA DA ARQUITETURA EM CAMADAS CLÁSSICA</h3>
+        
+        <p><strong>OLHE NO DIAGRAMA ACIMA:</strong> As setas <span style="color:#C0392B;font-weight:bold;">VERMELHAS TRACEJADAS</span> com símbolo ☠️ mostram o problema!</p>
+        
+        <p style="font-size: 1.1em; background-color: white; padding: 15px; border-radius: 4px; margin: 15px 0;">
+            <strong>O que está acontecendo?</strong><br/>
+            O <strong>GerenciadorAvaliacoes</strong> (camada Application - verde) está chamando diretamente as classes concretas 
+            <strong>AlunoRepositorio</strong> e <strong>TrabalhoRepositorio</strong> (camada Infrastructure - vermelha).
+        </p>
+        
+        <p><strong>Por que isso é um problema?</strong></p>
+        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+            <tr style="background-color: white;">
+                <td style="padding: 10px; border: 1px solid #ddd; vertical-align: top; width: 30%;">
+                    <strong>❌ Acoplamento Forte</strong>
+                </td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    Se você quiser trocar o <code>AlunoRepositorio</code> (que usa HashMap) por um <code>AlunoRepositorioJDBC</code> (que usa banco de dados), 
+                    você precisa <strong>modificar o código</strong> de quem cria o GerenciadorAvaliacoes.
+                </td>
+            </tr>
+            <tr style="background-color: white;">
+                <td style="padding: 10px; border: 1px solid #ddd; vertical-align: top;">
+                    <strong>❌ Dificulta Testes</strong>
+                </td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    Para testar o GerenciadorAvaliacoes isoladamente, você é <strong>obrigado a instanciar</strong> os repositórios reais. 
+                    Não consegue criar um "repositório falso" (mock) facilmente.
+                </td>
+            </tr>
+            <tr style="background-color: white;">
+                <td style="padding: 10px; border: 1px solid #ddd; vertical-align: top;">
+                    <strong>❌ Viola DIP</strong>
+                </td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    O <strong>Dependency Inversion Principle</strong> diz: "módulos de alto nível não devem depender de módulos de baixo nível; 
+                    ambos devem depender de abstrações". Aqui, Application (alto nível) depende diretamente de Infrastructure (baixo nível).
+                </td>
+            </tr>
+            <tr style="background-color: white;">
+                <td style="padding: 10px; border: 1px solid #ddd; vertical-align: top;">
+                    <strong>❌ Conhecimento Técnico</strong>
+                </td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    A camada Application "sabe" que existem classes concretas <code>AlunoRepositorio</code> e <code>TrabalhoRepositorio</code>. 
+                    Ela conhece detalhes da Infrastructure, violando a separação limpa de responsabilidades.
+                </td>
+            </tr>
+        </table>
+        
+        <div class="solution-box">
+            <h4>✅ SOLUÇÃO: Arquitetura Hexagonal (Ports & Adapters)</h4>
+            <p><strong>Como resolver esse problema?</strong></p>
+            <ol style="margin: 10px 0;">
+                <li>Criar <strong>interfaces (Ports)</strong> no <strong>Domain</strong>: 
+                    <ul>
+                        <li><code>interface IAlunoRepositorio { Aluno buscarPorId(String id); void salvar(Aluno a); }</code></li>
+                        <li><code>interface ITrabalhoRepositorio { Trabalho buscarPorId(String id); void salvar(Trabalho t); }</code></li>
+                    </ul>
+                </li>
+                <li>O <strong>GerenciadorAvaliacoes</strong> (Application) passa a depender das <strong>interfaces</strong>, não das implementações:
+                    <ul>
+                        <li><code>public GerenciadorAvaliacoes(IAlunoRepositorio repo, ...)</code></li>
+                    </ul>
+                </li>
+                <li>As classes <code>AlunoRepositorio</code> e <code>TrabalhoRepositorio</code> (Infrastructure) <strong>implementam as interfaces</strong></li>
+                <li><strong>Resultado:</strong> A seta de dependência é <strong>invertida</strong>! Infrastructure passa a depender de Domain (interfaces), e Application também depende apenas de Domain.</li>
+            </ol>
+            <p style="margin-top: 15px; font-weight: bold;">🎯 Na Hexagonal Architecture, esse problema NÃO existe — você verá na próxima arquitetura!</p>
+        </div>
+    </div>
+
+    <h2>🔄 Diagrama de Sequência - Fluxo de Comunicação</h2>
+    <p>Este diagrama mostra a sequência real de chamadas para cada caso de uso:</p>
+    <div class="diagram-container">
+        <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as 👤 Usuário
+    box rgb(74,144,217) Camada Presentation
+        participant C as AvaliacaoController
+    end
+    box rgb(39,174,96) Camada Application
+        participant G as GerenciadorAvaliacoes
+    end
+    box rgb(231,76,60) Camada Infrastructure
+        participant AR as AlunoRepositorio
+        participant TR as TrabalhoRepositorio
+    end
+    box rgb(243,156,18) Camada Domain
+        participant A as Aluno
+        participant T as Trabalho
+        participant N as Nota
+    end
+
+    Note over U,N: 📋 CASO DE USO 1: Cadastrar Trabalho
+
+    U->>C: cadastrar trabalho
+    C->>G: cadastrarTrabalho(id, titulo, alunoId)
+    G->>AR: buscarPorId(alunoId)
+    AR-->>G: retorna Aluno
+    G->>T: new Trabalho(id, titulo, autor)
+    Note over T: Entidade criada no Domínio
+    G->>TR: salvar(trabalho)
+    TR-->>G: salvo ✅
+    G-->>C: concluído
+    C-->>U: exibe confirmação
+
+    Note over U,N: 📋 CASO DE USO 2: Avaliar Trabalho
+
+    U->>C: avaliar trabalho
+    C->>G: avaliarTrabalho(notaId, trabalhoId, alunoId, valor)
+    G->>TR: buscarPorId(trabalhoId)
+    TR-->>G: retorna Trabalho
+    G->>AR: buscarPorId(avaliadorId)
+    AR-->>G: retorna Aluno (avaliador)
+    G->>N: new Nota(id, avaliador, valor)
+    Note over N: ✅ Valida valor entre 0 e 10
+    G->>T: adicionarNota(nota)
+    Note over T: Nota adicionada à lista
+    G-->>C: concluído
+    C-->>U: exibe confirmação
+
+    Note over U,N: 📋 CASO DE USO 3: Consultar Média
+
+    U->>C: consultar média
+    C->>G: consultarMedia(trabalhoId)
+    G->>TR: buscarPorId(trabalhoId)
+    TR-->>G: retorna Trabalho
+    G->>T: calcularMedia()
+    Note over T: 📐 Regra de negócio no Domínio!<br/>soma dos valores / quantidade
+    T-->>G: retorna 8.17
+    G-->>C: retorna média
+    C-->>U: exibe { "media": 8.17 }
+        </pre>
+    </div>
+
+    <div class="instructions" style="margin-top: 40px;">
+        <strong>📝 Legenda de Cores:</strong>
+        <ul>
+            <li>🟦 <strong>Azul</strong> = Camada Presentation (Ponto de entrada, Controller)</li>
+            <li>🟩 <strong>Verde</strong> = Camada Application (Orquestração, Gerenciador)</li>
+            <li>🟨 <strong>Amarelo</strong> = Camada Domain (Regras de negócio, Entidades)</li>
+            <li>🟥 <strong>Vermelho</strong> = Camada Infrastructure (Persistência, Repositórios)</li>
+        </ul>
+    </div>
+
+</body>
+</html>

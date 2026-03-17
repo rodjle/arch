@@ -1,0 +1,33 @@
+@startuml c4-componentes
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Diagrama de Componentes - Arquitetura em 4 Camadas
+
+Container_Boundary(app, "Sistema de Avaliação de Apresentações") {
+
+    Component(controller, "ApresentacaoController", "Camada Presentation", "Ponto de entrada.\nRecebe requisições do usuário\ne exibe resultados.")
+
+    Component(service, "ApresentacaoService", "Camada Application", "Orquestra os casos de uso:\ncadastrar apresentação,\navaliar e consultar média.")
+
+    Component(apresentacao, "Apresentacao", "Camada Domain", "Entidade central.\nContém a regra de negócio\ncalcularMedia().")
+    Component(alunoDomain, "Aluno", "Camada Domain", "Entidade de domínio.\nValida que nome não\npode ser vazio.")
+    Component(avaliacao, "Avaliacao", "Camada Domain", "Entidade de domínio.\nValida que nota deve\nestar entre 0 e 10.")
+
+    Component(alunoRepo, "AlunoRepositorio", "Camada Infrastructure", "Persiste alunos em memória\n(HashMap). Simula acesso\na banco de dados.")
+    Component(apresRepo, "ApresentacaoRepositorio", "Camada Infrastructure", "Persiste apresentações em\nmemória (HashMap). Simula\nacesso a banco de dados.")
+}
+
+Rel(controller, service, "Chama casos de uso")
+Rel(service, apresentacao, "Cria e usa entidades")
+Rel(service, alunoDomain, "Busca e usa entidades")
+Rel(service, avaliacao, "Cria avaliações")
+Rel(service, alunoRepo, "Salva e busca alunos")
+Rel(service, apresRepo, "Salva e busca apresentações")
+Rel(apresentacao, avaliacao, "Contém lista de avaliações")
+Rel(apresentacao, alunoDomain, "Referencia o autor")
+Rel(avaliacao, alunoDomain, "Referencia o avaliador")
+Rel(alunoRepo, alunoDomain, "Persiste")
+Rel(apresRepo, apresentacao, "Persiste")
+
+SHOW_LEGEND()
+@enduml

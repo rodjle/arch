@@ -1,0 +1,52 @@
+flowchart TD
+
+    subgraph PRESENTATION["🟦 CAMADA PRESENTATION"]
+        direction TB
+        CTRL["<b>AvaliacaoController</b><br/><i>Ponto de entrada do sistema</i><br/>main()"]
+    end
+
+    subgraph APPLICATION["🟩 CAMADA APPLICATION"]
+        direction TB
+        GEREN["<b>GerenciadorAvaliacoes</b><br/><i>Orquestra os casos de uso</i><br/>cadastrarTrabalho()<br/>avaliarTrabalho()<br/>consultarMedia()"]
+    end
+
+    subgraph DOMAIN["🟨 CAMADA DOMAIN"]
+        direction LR
+        ALUNO["<b>Aluno</b><br/><i>Entidade</i><br/>id, nome<br/>✅ Valida nome ≠ vazio"]
+        TRABALHO["<b>Trabalho</b><br/><i>Entidade Central</i><br/>id, titulo, autor<br/>List&lt;Nota&gt;<br/>📐 calcularMedia()"]
+        NOTA["<b>Nota</b><br/><i>Entidade</i><br/>id, avaliador, valor<br/>✅ Valida valor 0-10"]
+    end
+
+    subgraph INFRASTRUCTURE["🟥 CAMADA INFRASTRUCTURE"]
+        direction LR
+        ALUNO_REPO["<b>AlunoRepositorio</b><br/><i>Persistência</i><br/>HashMap em memória<br/>salvar() buscarPorId()<br/>listarTodos()"]
+        TRAB_REPO["<b>TrabalhoRepositorio</b><br/><i>Persistência</i><br/>HashMap em memória<br/>salvar() buscarPorId()<br/>listarTodos()"]
+    end
+
+    CTRL -->|"chama casos de uso"| GEREN
+    GEREN -->|"cria e usa entidades"| TRABALHO
+    GEREN -->|"cria notas"| NOTA
+    GEREN -->|"busca alunos"| ALUNO
+    GEREN -.->|"☠️ PROBLEMA!<br/>Depende de implementação concreta"| ALUNO_REPO
+    GEREN -.->|"☠️ PROBLEMA!<br/>Depende de implementação concreta"| TRAB_REPO
+    TRABALHO -.->|"contém lista de"| NOTA
+    TRABALHO -.->|"referencia autor"| ALUNO
+    NOTA -.->|"referencia avaliador"| ALUNO
+    ALUNO_REPO -.->|"persiste"| ALUNO
+    TRAB_REPO -.->|"persiste"| TRABALHO
+
+    style PRESENTATION fill:#4A90D9,stroke:#2C5F8A,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style APPLICATION fill:#27AE60,stroke:#1B7A43,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style DOMAIN fill:#F39C12,stroke:#C67D0A,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style INFRASTRUCTURE fill:#E74C3C,stroke:#A93226,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+
+    style CTRL fill:#85C1E9,stroke:#2C5F8A,stroke-width:2px,color:#1A1A1A
+    style GEREN fill:#82E0AA,stroke:#1B7A43,stroke-width:2px,color:#1A1A1A
+    style ALUNO fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style TRABALHO fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style NOTA fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style ALUNO_REPO fill:#F1948A,stroke:#A93226,stroke-width:2px,color:#1A1A1A
+    style TRAB_REPO fill:#F1948A,stroke:#A93226,stroke-width:2px,color:#1A1A1A
+
+    linkStyle 4 stroke:#C0392B,stroke-width:4px,stroke-dasharray:5 5
+    linkStyle 5 stroke:#C0392B,stroke-width:4px,stroke-dasharray:5 5
