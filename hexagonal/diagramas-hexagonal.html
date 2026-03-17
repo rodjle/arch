@@ -14,7 +14,7 @@
             themeVariables: {
                 primaryColor: '#E3F2FD',
                 primaryTextColor: '#1565C0',
-                primaryBorder Color: '#1E88E5',
+                primaryBorderColor: '#1E88E5',
                 lineColor: '#424242',
                 secondaryColor: '#FFF9C4',
                 tertiaryColor: '#F1F8E9'
@@ -185,6 +185,28 @@
             border-radius: 10px;
             margin: 30px 0;
             border: 2px solid #e0e0e0;
+        }
+
+        .mermaid text {
+            font-size: 18px !important;
+            font-weight: 800 !important;
+        }
+
+        .mermaid .messageText,
+        .mermaid .messageText tspan,
+        .mermaid .noteText,
+        .mermaid .noteText tspan,
+        .mermaid .labelText,
+        .mermaid .labelText tspan {
+            font-size: 20px !important;
+            font-weight: 900 !important;
+            fill: #1f1f1f !important;
+        }
+
+        .mermaid .actor text,
+        .mermaid .actor text tspan {
+            font-size: 18px !important;
+            font-weight: 900 !important;
         }
         
         /* ===== BADGES/ETIQUETAS ===== */
@@ -416,6 +438,148 @@ public class GerenciadorAvaliacoes {
         └── output/
             ├── IAlunoRepositorio.java  (Driven Port - interface de saída)
             └── ITrabalhoRepositorio.java  (Driven Port - interface de saída)</code></pre>
+
+            <div class="info-box concept" style="background: #FFF3E0; border-color: #FB8C00;">
+                <h4>🔌 Exemplo Didático: O que o Adapter faz?</h4>
+                <p>
+                    Pense no Adapter como um <strong>tradutor</strong>. O núcleo do sistema fala pela
+                    <strong>porta</strong> (interface), e o Adapter traduz isso para uma implementação concreta.
+                </p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>No exemplo didático</th>
+                        <th>No nosso sistema</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Porta (interface)</strong></td>
+                        <td><code>TomadaBrasileira</code></td>
+                        <td><code>IAlunoRepositorio</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Implementação concreta</strong></td>
+                        <td><code>PlugAmericano</code></td>
+                        <td><code>AlunoRepositorioMemoria</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adapter</strong></td>
+                        <td><code>AdaptadorTomada</code></td>
+                        <td><code>AlunoRepositorioMemoria</code> adaptando a porta</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cliente</strong></td>
+                        <td><code>Carregador</code></td>
+                        <td><code>GerenciadorAvaliacoes</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0;">
+                <div style="background: #FFEBEE; border: 2px solid #E53935; border-radius: 10px; padding: 20px;">
+                    <h4 style="margin-top: 0; color: #C62828;">❌ Sem Adapter</h4>
+                    <pre style="margin-bottom: 0;"><code>// O carregador espera este contrato
+interface TomadaBrasileira {
+    void fornecerEnergia();
+}
+
+// Mas eu só tenho isso
+class PlugAmericano {
+    public void connectUSPlug() {
+        System.out.println("Ligado no padrão americano");
+    }
+}
+
+class Carregador {
+    private TomadaBrasileira tomada;
+
+    public Carregador(TomadaBrasileira tomada) {
+        this.tomada = tomada;
+    }
+}
+
+// ❌ Não compila:
+// new Carregador(new PlugAmericano());</code></pre>
+                </div>
+
+                <div style="background: #E8F5E9; border: 2px solid #43A047; border-radius: 10px; padding: 20px;">
+                    <h4 style="margin-top: 0; color: #2E7D32;">✅ Com Adapter</h4>
+                    <pre style="margin-bottom: 0;"><code>interface TomadaBrasileira {
+    void fornecerEnergia();
+}
+
+class PlugAmericano {
+    public void connectUSPlug() {
+        System.out.println("Ligado no padrão americano");
+    }
+}
+
+// Adapter: traduz uma interface para outra
+class AdaptadorTomada implements TomadaBrasileira {
+    private PlugAmericano plug;
+
+    public AdaptadorTomada(PlugAmericano plug) {
+        this.plug = plug;
+    }
+
+    public void fornecerEnergia() {
+        plug.connectUSPlug();
+    }
+}
+
+class Carregador {
+    private TomadaBrasileira tomada;
+
+    public Carregador(TomadaBrasileira tomada) {
+        this.tomada = tomada;
+    }
+
+    public void carregar() {
+        tomada.fornecerEnergia();
+    }
+}
+
+// ✅ Agora funciona:
+Carregador carregador = new Carregador(
+    new AdaptadorTomada(new PlugAmericano())
+);
+carregador.carregar();</code></pre>
+                </div>
+            </div>
+
+            <div class="info-box solution">
+                <h4>🎯 Ligando com a arquitetura hexagonal</h4>
+                <p>
+                    No sistema, o <strong>GerenciadorAvaliacoes</strong> quer conversar com o contrato
+                    <code>IAlunoRepositorio</code>. Ele não quer saber se os dados vêm de memória, banco,
+                    arquivo ou API.
+                </p>
+                <p>
+                    O papel do Adapter é exatamente esse: <strong>encaixar uma implementação concreta na porta que o núcleo espera</strong>.
+                    Assim, <code>AlunoRepositorioMemoria</code> se conecta ao núcleo implementando
+                    <code>IAlunoRepositorio</code>.
+                </p>
+                <pre><code>// Porta esperada pelo núcleo
+interface IAlunoRepositorio {
+    Aluno buscarPorId(String id);
+}
+
+// Adapter concreto na borda do sistema
+class AlunoRepositorioMemoria implements IAlunoRepositorio {
+    public Aluno buscarPorId(String id) {
+        // busca em HashMap, banco, arquivo etc.
+    }
+}
+
+// Núcleo usa só a porta
+class GerenciadorAvaliacoes {
+    private IAlunoRepositorio alunoRepo;
+}</code></pre>
+            </div>
             
             <h3>✨ Benefícios Obtidos:</h3>
             <table>
@@ -554,12 +718,20 @@ flowchart TD
             
             <div class="mermaid">
 sequenceDiagram
-    participant Controller as AvaliacaoController<br/>(Driving Adapter)
-    participant IGeren as IGerenciadorAvaliacoes<br/>(Driving Port)
-    participant Geren as GerenciadorAvaliacoes<br/>(Application)
-    participant ITrabRepo as ITrabalhoRepositorio<br/>(Driven Port)
-    participant TrabRepo as TrabalhoRepositorioMemoria<br/>(Driven Adapter)
-    participant Trabalho as Trabalho<br/>(Domain Entity)
+    box rgb(74, 144, 217) Driving Adapter
+        participant Controller as AvaliacaoController<br/>(Driving Adapter)
+    end
+    box rgb(39, 174, 96) Application
+        participant IGeren as IGerenciadorAvaliacoes<br/>(Driving Port)
+        participant Geren as GerenciadorAvaliacoes<br/>(Application)
+    end
+    box rgb(243, 156, 18) Domain
+        participant Trabalho as Trabalho<br/>(Domain Entity)
+        participant ITrabRepo as ITrabalhoRepositorio<br/>(Driven Port)
+    end
+    box rgb(231, 76, 60) Driven Adapter
+        participant TrabRepo as TrabalhoRepositorioMemoria<br/>(Driven Adapter)
+    end
     
     Controller->>IGeren: avaliarTrabalho("n1", "t1", "a2", 8.5)
     Note over Controller,IGeren: 🔄 Chama INTERFACE,<br/>não classe concreta

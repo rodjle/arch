@@ -248,6 +248,121 @@ flowchart TD
             <strong>AlunoRepositorio</strong> e <strong>TrabalhoRepositorio</strong> (camada Infrastructure - vermelha).
         </p>
         
+        <div style="background-color: #fff8e1; border: 3px solid #ff9800; padding: 20px; margin: 20px 0; border-radius: 8px;">
+            <h4 style="color: #ff6f00; margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                🎓 PAUSA DIDÁTICA: O que é CLASSE CONCRETA vs INTERFACE?
+            </h4>
+            
+            <p style="font-size: 1.05em; margin-bottom: 15px;">
+                Antes de entender o problema, vamos ver um exemplo simples com animais:
+            </p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr>
+                    <td style="width: 50%; padding: 15px; border: 2px solid #ff9800; background-color: white; vertical-align: top;">
+                        <h5 style="color: #ff6f00; margin-top: 0;">❌ RUIM: Dependendo de Classe Concreta</h5>
+                        <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 0.9em;"><code>// 🔴 Classe concreta = implementação específica
+class Cachorro {
+    public void fazerSom() {
+        System.out.println("Au au!");
+    }
+}
+
+// ☠️ PROBLEMA: só funciona com Cachorro!
+class Pessoa {
+    private Cachorro animal; // ← CONCRETA
+    
+    public Pessoa() {
+        this.animal = new Cachorro(); // ← ACOPLADO
+    }
+    
+    public void interagir() {
+        animal.fazerSom();
+    }
+}
+
+// ❌ E se eu quiser um Gato? 
+// Preciso MUDAR O CÓDIGO da Pessoa!</code></pre>
+                    </td>
+                    
+                    <td style="width: 50%; padding: 15px; border: 2px solid #4caf50; background-color: white; vertical-align: top;">
+                        <h5 style="color: #2e7d32; margin-top: 0;">✅ BOM: Dependendo de Interface</h5>
+                        <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 0.9em;"><code>// 🟢 Interface = contrato abstrato
+interface Animal {
+    void fazerSom();
+}
+
+class Cachorro implements Animal {
+    public void fazerSom() { 
+        System.out.println("Au au!"); 
+    }
+}
+
+class Gato implements Animal {
+    public void fazerSom() { 
+        System.out.println("Miau!"); 
+    }
+}
+
+// ✅ FLEXÍVEL: funciona com qualquer Animal!
+class Pessoa {
+    private Animal animal; // ← INTERFACE
+    
+    // Recebe qualquer implementação
+    public Pessoa(Animal a) {
+        this.animal = a; // ← DESACOPLADO
+    }
+    
+    public void interagir() {
+        animal.fazerSom();
+    }
+}
+
+// ✅ Posso trocar sem mudar Pessoa:
+new Pessoa(new Cachorro());
+new Pessoa(new Gato());</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+            <div style="background-color: #e3f2fd; padding: 15px; border-left: 4px solid #2196f3; border-radius: 4px; margin-top: 15px;">
+                <strong style="color: #1565c0; font-size: 1.1em;">🎯 ANALOGIA COM O SISTEMA:</strong>
+                <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px; background-color: white; border: 1px solid #2196f3; width: 30%; font-weight: bold;">No exemplo Animal:</td>
+                        <td style="padding: 8px; background-color: white; border: 1px solid #2196f3; width: 35%; font-weight: bold;">No nosso sistema:</td>
+                        <td style="padding: 8px; background-color: white; border: 1px solid #2196f3; font-weight: bold;">Problema:</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; background-color: white; border: 1px solid #2196f3;">
+                            <code>Pessoa</code> depende de <code>Cachorro</code> (concreta)
+                        </td>
+                        <td style="padding: 8px; background-color: white; border: 1px solid #2196f3;">
+                            <code>GerenciadorAvaliacoes</code> depende de <code>AlunoRepositorio</code> (concreta)
+                        </td>
+                        <td style="padding: 8px; background-color: white; border: 1px solid #2196f3;">
+                            ❌ Dificulta trocar implementação<br/>
+                            ❌ Não consegue testar isoladamente<br/>
+                            ❌ Acoplamento forte
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; background-color: #e8f5e9; border: 1px solid #4caf50;">
+                            <code>Pessoa</code> depende de <code>Animal</code> (interface)
+                        </td>
+                        <td style="padding: 8px; background-color: #e8f5e9; border: 1px solid #4caf50;">
+                            <code>GerenciadorAvaliacoes</code> deveria depender de <code>IAlunoRepositorio</code> (interface)
+                        </td>
+                        <td style="padding: 8px; background-color: #e8f5e9; border: 1px solid #4caf50;">
+                            ✅ Flexível para trocar<br/>
+                            ✅ Fácil criar mocks/testes<br/>
+                            ✅ Baixo acoplamento
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
         <p><strong>Por que isso é um problema?</strong></p>
         <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
             <tr style="background-color: white;">
