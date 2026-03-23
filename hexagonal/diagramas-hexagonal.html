@@ -636,6 +636,181 @@ IAlunoRepositorio alunoRepo = new AlunoRepositorioMemoria();
 IGerenciadorAvaliacoes gerenciador = new GerenciadorAvaliacoes(trabalhoRepo, alunoRepo);
 // ✅ Application não sabe qual implementação está usando!</code></pre>
         </section>
+
+        <!-- ===== USE CASES ===== -->
+        <section id="use-cases">
+            <h2>🎯 O que é Use Case e como definir responsabilidades</h2>
+
+            <p>
+                Em Arquitetura Hexagonal, <strong>use case</strong> é a <strong>ação que o sistema oferece ao mundo externo</strong>.
+                Ele descreve uma intenção de negócio, como <em>cadastrar um trabalho</em>, <em>avaliar um trabalho</em>
+                ou <em>consultar a média</em>. No projeto desta pasta, esses casos de uso aparecem na porta de entrada
+                <code>IGerenciadorAvaliacoes</code> e são implementados por <code>GerenciadorAvaliacoes</code>.
+            </p>
+
+            <div class="info-box concept">
+                <h4>📌 Regra prática</h4>
+                <p>
+                    Se a lógica está coordenando passos do sistema, ela tende a ser <strong>Application / Use Case</strong>.
+                    Se ela representa regra pura do domínio, ela tende a ficar nas <strong>entidades</strong>.
+                    Se ela fala com banco, memória, arquivo, API ou console, ela pertence a <strong>Adapters</strong>.
+                </p>
+            </div>
+
+            <h3>Use cases do exemplo</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Caso de uso</th>
+                        <th>Onde aparece</th>
+                        <th>Objetivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>cadastrarTrabalho</code></td>
+                        <td><code>IGerenciadorAvaliacoes</code> e <code>GerenciadorAvaliacoes</code></td>
+                        <td>Criar um trabalho associado a um aluno autor</td>
+                    </tr>
+                    <tr>
+                        <td><code>avaliarTrabalho</code></td>
+                        <td><code>IGerenciadorAvaliacoes</code> e <code>GerenciadorAvaliacoes</code></td>
+                        <td>Registrar uma nota dada por um avaliador</td>
+                    </tr>
+                    <tr>
+                        <td><code>consultarMedia</code></td>
+                        <td><code>IGerenciadorAvaliacoes</code> e <code>GerenciadorAvaliacoes</code></td>
+                        <td>Consultar o resultado consolidado de um trabalho</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Como identificar a responsabilidade de cada parte</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parte</th>
+                        <th>Responsabilidade correta</th>
+                        <th>Exemplo no projeto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Driving Adapter</strong></td>
+                        <td>Receber a entrada, montar dependências e chamar o caso de uso</td>
+                        <td><code>AvaliacaoController</code> instancia repositórios e chama <code>IGerenciadorAvaliacoes</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Input Port</strong></td>
+                        <td>Definir quais operações o sistema oferece</td>
+                        <td><code>IGerenciadorAvaliacoes</code> declara <code>cadastrarTrabalho</code>, <code>avaliarTrabalho</code> e <code>consultarMedia</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Case / Application</strong></td>
+                        <td>Orquestrar o fluxo, validar cenários de uso e coordenar portas e entidades</td>
+                        <td><code>GerenciadorAvaliacoes</code> busca aluno, busca trabalho, cria objetos e persiste</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Entidades de domínio</strong></td>
+                        <td>Conter regra de negócio pura e comportamento do problema</td>
+                        <td><code>Nota</code> valida faixa de valor; <code>Trabalho</code> recebe nota e calcula média</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Output Ports</strong></td>
+                        <td>Definir o contrato que o caso de uso precisa para sair do núcleo</td>
+                        <td><code>IAlunoRepositorio</code> e <code>ITrabalhoRepositorio</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Driven Adapters</strong></td>
+                        <td>Implementar o acesso técnico a dados ou serviços externos</td>
+                        <td><code>AlunoRepositorioMemoria</code> e <code>TrabalhoRepositorioMemoria</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Exemplo 1: cadastrarTrabalho</h3>
+            <p>
+                O caso de uso <strong>não cria aluno</strong> e <strong>não sabe como salvar em memória</strong>.
+                A responsabilidade dele é coordenar o processo: localizar o autor, validar a existência,
+                criar a entidade <code>Trabalho</code> e pedir persistência pela porta de saída.
+            </p>
+            <pre><code>public void cadastrarTrabalho(String id, String titulo, String alunoId) {
+    Aluno autor = alunoRepo.buscarPorId(alunoId);   // porta de saída
+
+    if (autor == null) {
+        throw new IllegalArgumentException("Aluno não encontrado.");
+    }
+
+    Trabalho trabalho = new Trabalho(id, titulo, autor); // entidade de domínio
+    trabalhoRepo.salvar(trabalho);                       // porta de saída
+}</code></pre>
+
+            <div class="info-box benefit">
+                <h4>✅ Responsabilidades bem separadas</h4>
+                <ul>
+                    <li><strong>Use case:</strong> coordena os passos do cadastro</li>
+                    <li><strong>Entidade Trabalho:</strong> garante sua consistência interna</li>
+                    <li><strong>Repositório:</strong> decide como salvar</li>
+                    <li><strong>Controller:</strong> decide quando chamar esse fluxo</li>
+                </ul>
+            </div>
+
+            <h3>Exemplo 2: avaliarTrabalho</h3>
+            <p>
+                Esse caso de uso mostra bem a ideia de orquestração. O <code>GerenciadorAvaliacoes</code>
+                busca o trabalho, busca o avaliador, cria a <code>Nota</code>, pede para o <code>Trabalho</code>
+                incorporar essa nota e então persiste o resultado atualizado.
+            </p>
+            <pre><code>public void avaliarTrabalho(String notaId, String trabalhoId, String avaliadorId, double valor) {
+    Trabalho trabalho = trabalhoRepo.buscarPorId(trabalhoId);
+    Aluno avaliador = alunoRepo.buscarPorId(avaliadorId);
+
+    Nota nota = new Nota(notaId, avaliador, valor);
+    trabalho.adicionarNota(nota);
+
+    trabalhoRepo.salvar(trabalho);
+}</code></pre>
+
+            <p>
+                A responsabilidade fica dividida assim:
+            </p>
+            <ul>
+                <li><strong>Use case:</strong> controlar a sequência do processo de avaliação</li>
+                <li><strong>Nota:</strong> validar se a nota é aceitável</li>
+                <li><strong>Trabalho:</strong> aplicar a regra de adicionar a nota ao agregado</li>
+                <li><strong>Repositório:</strong> persistir o novo estado</li>
+            </ul>
+
+            <h3>Exemplo 3: consultarMedia</h3>
+            <p>
+                Aqui aparece uma decisão importante de responsabilidade: <strong>calcular média não é papel do use case</strong>.
+                O caso de uso apenas recupera o trabalho e delega o cálculo para a entidade <code>Trabalho</code>,
+                porque essa é uma regra de negócio do domínio.
+            </p>
+            <pre><code>public double consultarMedia(String trabalhoId) {
+    Trabalho trabalho = trabalhoRepo.buscarPorId(trabalhoId);
+    return trabalho.calcularMedia();
+}</code></pre>
+
+            <div class="info-box solution">
+                <h4>🧠 Critério para decidir</h4>
+                <ul>
+                    <li>Se a lógica depende da ordem do processo, fica no <strong>use case</strong></li>
+                    <li>Se a lógica expressa uma regra do negócio, fica no <strong>domain</strong></li>
+                    <li>Se a lógica fala com tecnologia externa, fica no <strong>adapter</strong></li>
+                    <li>Se a lógica só descreve um contrato, fica na <strong>port</strong></li>
+                </ul>
+            </div>
+
+            <h3>Resumo aplicado ao projeto</h3>
+            <p>
+                Neste exemplo da pasta <strong>hexagonal</strong>, o <code>GerenciadorAvaliacoes</code> é o use case
+                principal porque ele representa as ações do sistema e orquestra o fluxo entre entidades e portas.
+                Já <code>IGerenciadorAvaliacoes</code> expõe essas ações como contrato de entrada,
+                <code>IAlunoRepositorio</code> e <code>ITrabalhoRepositorio</code> definem os contratos de saída,
+                e os adaptadores concretos ficam responsáveis apenas pela parte técnica.
+            </p>
+        </section>
         
         <!-- ===== DIAGRAMA DE COMPONENTES ===== -->
         <section id="diagrama-componentes">

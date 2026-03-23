@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas - Estoque em Camadas</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            background: #f5f5f5;
+            color: #2c3e50;
+        }
+
+        h1, h2 {
+            margin-bottom: 12px;
+        }
+
+        .diagram-container {
+            background: white;
+            padding: 24px;
+            margin: 20px 0 36px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid text {
+            font-size: 16px !important;
+            font-weight: bold !important;
+        }
+
+        .mermaid .actor text,
+        .mermaid .messageText,
+        .mermaid .labelText,
+        .mermaid .noteText {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diagramas - Aplicação estoque-camadas</h1>
+
+    <h2>Diagrama de Componentes</h2>
+    <div class="diagram-container">
+        <pre class="mermaid">
+flowchart TD
+
+    subgraph PRESENTATION["CAMADA PRESENTATION"]
+        CTRL["<b>EstoqueController</b><br/>main()<br/>ponto de entrada"]
+    end
+
+    subgraph APPLICATION["CAMADA APPLICATION"]
+        GEREN["<b>GerenciadorEstoque</b><br/>cadastrarProduto()<br/>consultarProduto()<br/>excluirProduto()<br/>calcularPrecoMedio()"]
+    end
+
+    subgraph DOMAIN["CAMADA DOMAIN"]
+        PROD["<b>Produto</b><br/>id, nome, preco<br/>valida nome e preco"]
+        ESTOQUE["<b>Estoque</b><br/>calcularPrecoMedio(List&lt;Produto&gt;)"]
+    end
+
+    subgraph INFRA["CAMADA INFRASTRUCTURE"]
+        REPO["<b>ProdutoRepositorio</b><br/>HashMap em memória<br/>salvar() buscarPorId()<br/>excluirPorId() listarTodos()"]
+    end
+
+    CTRL -->|"chama casos de uso"| GEREN
+    GEREN -->|"cria e consulta"| PROD
+    GEREN -->|"delega regra"| ESTOQUE
+    GEREN -.->|"PROBLEMA:<br/>dependência concreta"| REPO
+    REPO -.->|"persiste"| PROD
+
+    style PRESENTATION fill:#4A90D9,stroke:#2C5F8A,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style APPLICATION fill:#27AE60,stroke:#1B7A43,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style DOMAIN fill:#F39C12,stroke:#C67D0A,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+    style INFRA fill:#E74C3C,stroke:#A93226,stroke-width:3px,color:#FFFFFF,stroke-dasharray:8 4
+
+    style CTRL fill:#85C1E9,stroke:#2C5F8A,stroke-width:2px,color:#1A1A1A
+    style GEREN fill:#82E0AA,stroke:#1B7A43,stroke-width:2px,color:#1A1A1A
+    style PROD fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style ESTOQUE fill:#FAD7A0,stroke:#C67D0A,stroke-width:2px,color:#1A1A1A
+    style REPO fill:#F1948A,stroke:#A93226,stroke-width:2px,color:#1A1A1A
+
+    linkStyle 3 stroke:#C0392B,stroke-width:4px,stroke-dasharray:5 5
+        </pre>
+    </div>
+
+    <h2>Diagrama de Sequência</h2>
+    <div class="diagram-container">
+        <pre class="mermaid">
+sequenceDiagram
+    actor Usuario
+    participant Controller as EstoqueController<br/>(Presentation)
+    participant App as GerenciadorEstoque<br/>(Application)
+    participant Repo as ProdutoRepositorio<br/>(Infrastructure)
+    participant Estoque as Estoque<br/>(Domain)
+
+    Usuario->>Controller: solicitar calcularPrecoMedio()
+    Controller->>App: calcularPrecoMedio()
+    App->>Repo: listarTodos()
+    Repo-->>App: Lista de Produto
+    App->>Estoque: calcularPrecoMedio(produtos)
+    Estoque-->>App: precoMedio
+    App-->>Controller: precoMedio
+    Controller-->>Usuario: exibir valor médio
+
+    Note over App,Repo: Problema da arquitetura em camadas:<br/>Application depende da classe concreta ProdutoRepositorio
+        </pre>
+    </div>
+</body>
+</html>
