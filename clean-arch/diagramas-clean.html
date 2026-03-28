@@ -3,1079 +3,848 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clean Architecture - Diagramas e Documentação</title>
+    <title>Arquitetura Limpa - Sistema de Avaliacao</title>
+
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#E8F5E9',
+                primaryTextColor: '#134E4A',
+                primaryBorderColor: '#0F766E',
+                lineColor: '#334155',
+                secondaryColor: '#FEF3C7',
+                tertiaryColor: '#ECFCCB'
+            }
+        });
+    </script>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --bg-start: #0f766e;
+            --bg-end: #1e293b;
+            --title: #0f766e;
+            --title-dark: #134e4a;
+            --text: #334155;
+            --muted: #64748b;
+            --panel: #ffffff;
+            --entities: #facc15;
+            --usecases: #22c55e;
+            --adapters: #fb923c;
+            --frameworks: #ef4444;
+            --soft-blue: #e0f2fe;
+            --soft-red: #fef2f2;
+            --soft-green: #ecfdf5;
+            --soft-gold: #fefce8;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text);
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
+            background: var(--panel);
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 22px 70px rgba(15, 23, 42, 0.35);
         }
-        
+
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
             text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 3px solid var(--title);
+            margin-bottom: 40px;
         }
-        
-        header h1 {
-            font-size: 3em;
+
+        h1 {
+            font-size: 2.6em;
+            color: var(--title);
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+
+        .subtitle {
+            font-size: 1.15em;
+            color: var(--muted);
+            font-style: italic;
         }
-        
-        .content {
-            padding: 40px;
-        }
-        
-        section {
-            margin-bottom: 60px;
-        }
-        
+
         h2 {
-            color: #667eea;
-            font-size: 2.2em;
+            font-size: 2em;
+            color: var(--title-dark);
+            margin-top: 50px;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+            padding-left: 15px;
+            border-left: 5px solid var(--title);
         }
-        
+
         h3 {
-            color: #764ba2;
-            font-size: 1.8em;
-            margin-top: 30px;
+            font-size: 1.45em;
+            color: #0f172a;
+            margin-top: 28px;
             margin-bottom: 15px;
         }
-        
-        h4 {
-            color: #555;
-            font-size: 1.4em;
-            margin-top: 20px;
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 34px;
+            margin-bottom: 20px;
+        }
+
+        li {
             margin-bottom: 10px;
         }
-        
-        p, li {
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-        
-        .diagram-container {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 30px;
-            margin: 30px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .mermaid {
-            text-align: center;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        
+
         .info-box {
-            background: #e8f4f8;
-            border-left: 5px solid #667eea;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
+            padding: 22px;
+            margin: 22px 0;
+            border-radius: 12px;
+            border-left: 6px solid;
         }
-        
-        .warning-box {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
+
+        .info-box.concept {
+            background: var(--soft-blue);
+            border-color: #0284c7;
         }
-        
-        .success-box {
-            background: #d4edda;
-            border-left: 5px solid #28a745;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
+
+        .info-box.problem {
+            background: var(--soft-red);
+            border-color: #dc2626;
         }
-        
+
+        .info-box.solution {
+            background: var(--soft-green);
+            border-color: #16a34a;
+        }
+
+        .info-box.benefit {
+            background: var(--soft-gold);
+            border-color: #ca8a04;
+        }
+
+        .info-box h4,
+        .panel h4,
+        .callout-item h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #0f172a;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.82em;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .badge.entities {
+            background: var(--entities);
+            color: #3f3f46;
+        }
+
+        .badge.usecases {
+            background: var(--usecases);
+            color: #fff;
+        }
+
+        .badge.adapters {
+            background: var(--adapters);
+            color: #fff;
+        }
+
+        .badge.frameworks {
+            background: var(--frameworks);
+            color: #fff;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
         }
-        
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
+
         th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: bold;
+            background: linear-gradient(135deg, #0f766e 0%, #0f172a 100%);
+            color: #fff;
+            padding: 14px;
+            text-align: left;
         }
-        
-        tr:hover {
-            background: #f5f5f5;
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e8f0;
         }
-        
-        code {
-            background: #f4f4f4;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            color: #c7254e;
+
+        tr:nth-child(even) {
+            background: #f8fafc;
         }
-        
+
         pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
+            background: #0f172a;
+            color: #e2e8f0;
             padding: 20px;
             border-radius: 10px;
             overflow-x: auto;
             margin: 20px 0;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
         }
-        
-        pre code {
-            background: transparent;
-            color: inherit;
-            padding: 0;
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.92em;
         }
-        
-        .layers {
-            display: flex;
-            justify-content: space-around;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-        
-        .layer {
-            flex: 1;
-            min-width: 200px;
-            margin: 10px;
+
+        .mermaid {
+            background: #f8fafc;
             padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            margin: 28px 0;
+            border: 2px solid #e2e8f0;
         }
-        
-        .layer-entities {
-            background: #ffd700;
-            color: #333;
+
+        .mermaid text {
+            font-size: 18px !important;
+            font-weight: 800 !important;
         }
-        
-        .layer-usecases {
-            background: #28a745;
+
+        .mermaid .messageText,
+        .mermaid .messageText tspan,
+        .mermaid .noteText,
+        .mermaid .noteText tspan,
+        .mermaid .labelText,
+        .mermaid .labelText tspan {
+            font-size: 19px !important;
+            font-weight: 800 !important;
+            fill: #1f2937 !important;
         }
-        
-        .layer-adapters {
-            background: #ff8c00;
+
+        .hero-grid,
+        .grid-two,
+        .ring-layout,
+        .screaming-grid,
+        .callout-list {
+            display: grid;
+            gap: 24px;
         }
-        
-        .layer-frameworks {
-            background: #dc3545;
+
+        .hero-grid,
+        .ring-layout,
+        .screaming-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
         }
-        
-        ul, ol {
-            margin-left: 30px;
-            margin-bottom: 20px;
+
+        .grid-two,
+        .callout-list {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
-        
-        .circle-diagram {
-            max-width: 600px;
-            margin: 30px auto;
+
+        .panel {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .clean-figure {
             position: relative;
-        }
-        
-        .circle {
-            border-radius: 50%;
-            position: absolute;
+            width: min(100%, 520px);
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            color: white;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        
-        .dependency-arrow {
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            font-size: 3em;
-            color: #667eea;
-            margin: 20px 0;
+            font-weight: 700;
+            box-shadow: inset 0 0 0 2px rgba(15, 23, 42, 0.08);
         }
-        
+
+        .ring.frameworks {
+            width: 100%;
+            height: 100%;
+            background: rgba(239, 68, 68, 0.18);
+            color: #7f1d1d;
+        }
+
+        .ring.adapters {
+            width: 78%;
+            height: 78%;
+            background: rgba(251, 146, 60, 0.28);
+            color: #9a3412;
+        }
+
+        .ring.usecases {
+            width: 56%;
+            height: 56%;
+            background: rgba(34, 197, 94, 0.32);
+            color: #166534;
+        }
+
+        .ring.entities {
+            width: 34%;
+            height: 34%;
+            background: rgba(250, 204, 21, 0.88);
+            color: #3f3f46;
+        }
+
+        .ring-label {
+            position: absolute;
+            max-width: 200px;
+            font-size: 0.92em;
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        .label-frameworks {
+            top: 10%;
+            right: 10%;
+        }
+
+        .label-adapters {
+            left: 7%;
+            top: 32%;
+        }
+
+        .label-usecases {
+            right: 13%;
+            bottom: 28%;
+        }
+
+        .label-entities {
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .dependency-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            font-size: 1.05em;
+            font-weight: 700;
+            color: var(--title-dark);
+        }
+
+        .dependency-flow span {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #ecfeff;
+            border: 1px solid #99f6e4;
+        }
+
+        .quote-card {
+            background: linear-gradient(135deg, #082f49 0%, #134e4a 100%);
+            color: #f8fafc;
+            padding: 26px;
+            border-radius: 16px;
+            box-shadow: 0 16px 30px rgba(8, 47, 73, 0.28);
+        }
+
+        .quote-card blockquote {
+            font-size: 1.35em;
+            line-height: 1.5;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .callout-item {
+            background: #fff;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
         footer {
-            background: #333;
-            color: white;
             text-align: center;
-            padding: 30px;
-            margin-top: 40px;
+            padding-top: 30px;
+            margin-top: 50px;
+            border-top: 2px solid #e2e8f0;
+            color: var(--muted);
+            font-size: 0.92em;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 960px) {
+            .hero-grid,
+            .grid-two,
+            .ring-layout,
+            .screaming-grid,
+            .callout-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 22px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.55em;
+            }
+
+            .clean-figure {
+                width: 100%;
+                max-width: 420px;
+            }
+
+            .ring-label {
+                position: static;
+                transform: none;
+                max-width: none;
+                display: block;
+                margin-top: 8px;
+                text-align: center;
+            }
+
+            .label-frameworks,
+            .label-adapters,
+            .label-usecases,
+            .label-entities {
+                position: static;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🏛️ Clean Architecture</h1>
-            <p>Sistema de Avaliação de Trabalhos - Arquitetura em Círculos Concêntricos</p>
-            <p><small>Por Uncle Bob (Robert C. Martin)</small></p>
+            <h1>Arquitetura Limpa</h1>
+            <p class="subtitle">Sistema de avaliacao de trabalhos academicos</p>
+            <p class="subtitle">Entities, Use Cases, Interface Adapters e Frameworks &amp; Drivers</p>
         </header>
-        
-        <div class="content">
-            
-            <!-- SEÇÃO 1: O QUE É CLEAN ARCHITECTURE -->
-            <section id="introducao">
-                <h2>🏛️ O QUE É CLEAN ARCHITECTURE?</h2>
-                
-                <p><strong>Clean Architecture</strong> é uma arquitetura de software criada por <strong>Robert C. Martin (Uncle Bob)</strong> que organiza o código em <strong>4 camadas concêntricas</strong>, com a regra fundamental de que <strong>as dependências sempre apontam para dentro</strong>.</p>
-                
-                <div class="info-box">
-                    <h4>📚 Origem</h4>
-                    <p>Proposta no livro <em>"Clean Architecture: A Craftsman's Guide to Software Structure and Design"</em> (2017), a Clean Architecture é uma evolução e unificação de várias arquiteturas anteriores: Hexagonal Architecture, Onion Architecture, DCI, BCE, entre outras.</p>
-                </div>
-                
-                <h3>🎯 Objetivos Principais</h3>
-                <ul>
-                    <li><strong>Independência de Frameworks:</strong> A arquitetura não depende de bibliotecas externas</li>
-                    <li><strong>Testabilidade:</strong> Regras de negócio podem ser testadas sem UI, banco, servidor, etc</li>
-                    <li><strong>Independência de UI:</strong> A interface pode mudar sem afetar o sistema</li>
-                    <li><strong>Independência de Banco de Dados:</strong> Regras de negócio não dependem do BD</li>
-                    <li><strong>Independência de Agentes Externos:</strong> Regras de negócio não sabem nada sobre o mundo externo</li>
-                </ul>
-                
-                <h3>🔴🟠🟢🟡 As 4 Camadas Concêntricas</h3>
-                <div class="layers">
-                    <div class="layer layer-entities">
-                        <h4>🟡 ENTITIES</h4>
-                        <p>Camada 1 - Centro</p>
-                        <p>Enterprise Business Rules</p>
-                    </div>
-                    <div class="layer layer-usecases">
-                        <h4>🟢 USE CASES</h4>
-                        <p>Camada 2</p>
-                        <p>Application Business Rules</p>
-                    </div>
-                    <div class="layer layer-adapters">
-                        <h4>🟠 INTERFACE ADAPTERS</h4>
-                        <p>Camada 3</p>
-                        <p>Controllers, Presenters, Gateways</p>
-                    </div>
-                    <div class="layer layer-frameworks">
-                        <h4>🔴 FRAMEWORKS & DRIVERS</h4>
-                        <p>Camada 4 - Externa</p>
-                        <p>UI, DB, Web, Devices</p>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- SEÇÃO 2: REGRA DE DEPENDÊNCIA -->
-            <section id="regra-dependencia">
-                <h2>✅ A REGRA DE DEPENDÊNCIA</h2>
-                
-                <div class="warning-box">
-                    <h3>⚠️ REGRA MAIS IMPORTANTE DA CLEAN ARCHITECTURE</h3>
-                    <p style="font-size: 1.3em; font-weight: bold;">
-                        "Source code dependencies must point only inward, toward higher-level policies."
+
+        <section id="introducao">
+            <h2>O que e Clean Architecture?</h2>
+
+            <div class="hero-grid">
+                <div>
+                    <p>
+                        A <strong>Clean Architecture</strong>, proposta por <strong>Robert C. Martin</strong>,
+                        organiza o software em camadas concentricas para proteger as regras de negocio
+                        contra detalhes tecnicos como interface, banco de dados e frameworks.
                     </p>
-                    <p>Tradução: <strong>As dependências do código-fonte devem apontar apenas para dentro, em direção a políticas de nível mais alto.</strong></p>
+                    <div class="info-box concept">
+                        <h4>Ideia central</h4>
+                        <p>
+                            O centro do sistema deve conter aquilo que tem mais valor e muda menos:
+                            entidades e regras de negocio. Tudo o que esta fora disso deve depender
+                            das camadas internas, nunca o contrario.
+                        </p>
+                    </div>
                 </div>
-                
-                <h3>🔍 O que isso significa?</h3>
-                <ul>
-                    <li><strong>Entities</strong> não dependem de nada (centro do círculo)</li>
-                    <li><strong>Use Cases</strong> dependem apenas de Entities</li>
-                    <li><strong>Interface Adapters</strong> dependem de Use Cases e Entities</li>
-                    <li><strong>Frameworks & Drivers</strong> dependem de todas as camadas internas</li>
-                </ul>
-                
-                <h3>🚫 O que NÃO pode acontecer?</h3>
-                <ul>
-                    <li>Entities importarem Use Cases (❌)</li>
-                    <li>Use Cases importarem Controllers (❌)</li>
-                    <li>Camadas internas conhecerem detalhes de camadas externas (❌)</li>
-                </ul>
-                
-                <div class="dependency-arrow">
-                    🔴 → 🟠 → 🟢 → 🟡
+
+                <div class="panel">
+                    <h4>Objetivos da arquitetura</h4>
+                    <ul>
+                        <li>Manter regras de negocio independentes de tecnologia</li>
+                        <li>Separar responsabilidades por tipo de camada</li>
+                        <li>Facilitar testes unitarios dos casos de uso</li>
+                        <li>Permitir troca de interface, persistencia ou framework com menor impacto</li>
+                    </ul>
+                    <div class="dependency-flow">
+                        <span>Frameworks</span>
+                        <span>Adapters</span>
+                        <span>Use Cases</span>
+                        <span>Entities</span>
+                    </div>
                 </div>
-                <p style="text-align: center; font-size: 1.2em; font-weight: bold; color: #667eea;">
-                    Dependências SEMPRE apontam para DENTRO!
+            </div>
+        </section>
+
+        <section id="problema">
+            <h2>Por que sair do modelo tradicional?</h2>
+
+            <div class="info-box problem">
+                <h4>Problema que a Clean tenta resolver</h4>
+                <p>
+                    Em organizacoes mais simples, a regra de negocio costuma ficar misturada com
+                    controller, repositorio, framework e detalhes de entrada e saida. Quando isso acontece,
+                    o projeto cresce em volta da tecnologia e nao do dominio.
                 </p>
-                
-                <h3>🔄 Como inverter dependências?</h3>
-                <p>Use o <strong>Dependency Inversion Principle (DIP)</strong>:</p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sinal de problema</th>
+                        <th>Efeito no projeto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge frameworks">Framework</span> classes centrais dependem de detalhes externos</td>
+                        <td>Trocas tecnicas geram mudancas em codigo de negocio</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge adapters">Adapters</span> assumem responsabilidades demais</td>
+                        <td>Controller vira orquestrador, validador e formatador ao mesmo tempo</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge usecases">Use Cases</span> inexistentes ou difusos</td>
+                        <td>Fluxo da aplicacao fica espalhado e dificil de testar</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge entities">Entities</span> anemicas</td>
+                        <td>Regras de negocio acabam migrando para servicos ou controllers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="regra">
+            <h2>A regra de dependencia</h2>
+
+            <div class="info-box solution">
+                <h4>Regra mais importante</h4>
+                <p>
+                    As dependencias do codigo devem apontar sempre para dentro. Isso significa que
+                    nomes, classes e formatos definidos nas camadas externas nao devem aparecer nas
+                    camadas mais internas.
+                </p>
+            </div>
+
+            <div class="grid-two">
+                <div class="panel">
+                    <h4>O que pode acontecer</h4>
+                    <ul>
+                        <li>Use Cases dependem de Entities</li>
+                        <li>Adapters dependem de Use Cases</li>
+                        <li>Frameworks compoem e instanciam tudo</li>
+                        <li>Gateways concretos implementam interfaces definidas mais dentro</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h4>O que deve ser evitado</h4>
+                    <ul>
+                        <li>Entity importando controller ou presenter</li>
+                        <li>Use Case conhecendo classe concreta de repositorio</li>
+                        <li>Framework aparecendo nas regras de negocio</li>
+                        <li>DTO externo vazando para dentro da entidade</li>
+                    </ul>
+                </div>
+            </div>
+
+            <pre><code>// Direcao correta das dependencias
+Frameworks &amp; Drivers -&gt; Interface Adapters -&gt; Use Cases -&gt; Entities
+
+// Em Clean Architecture, a inversao ocorre por interfaces:
+// a interface e definida no centro util da aplicacao
+// e implementada fora dele.</code></pre>
+        </section>
+
+        <section id="figura-clean">
+            <h2>Figura da Clean Architecture</h2>
+
+            <div class="ring-layout">
+                <div class="panel">
+                    <div class="clean-figure" aria-label="Figura da Clean Architecture com circulos concentricos">
+                        <div class="ring frameworks"></div>
+                        <div class="ring adapters"></div>
+                        <div class="ring usecases"></div>
+                        <div class="ring entities">Entities</div>
+                        <div class="ring-label label-frameworks">Frameworks &amp; Drivers<br>UI, Main, console, persistencia</div>
+                        <div class="ring-label label-adapters">Interface Adapters<br>Controllers, Presenters, Gateways</div>
+                        <div class="ring-label label-usecases">Use Cases<br>Regras da aplicacao e portas</div>
+                        <div class="ring-label label-entities">Enterprise Business Rules</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-box benefit">
+                        <h4>Como ler a figura</h4>
+                        <ul>
+                            <li><strong>Centro:</strong> entidades com regras mais estaveis do dominio</li>
+                            <li><strong>Segundo anel:</strong> casos de uso que coordenam o fluxo da aplicacao</li>
+                            <li><strong>Terceiro anel:</strong> adaptadores que traduzem entrada e saida</li>
+                            <li><strong>Anel externo:</strong> tecnologia, IO, main, banco e interface</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box concept">
+                        <h4>Leitura pratica no projeto</h4>
+                        <p>
+                            No seu exemplo, <strong>entities</strong> ficam em <code>src/entities</code>,
+                            os <strong>use cases</strong> em <code>src/usecases</code>, os
+                            <strong>adapters</strong> em <code>src/adapters</code> e o ponto de entrada em
+                            <code>src/frameworks/Main.java</code>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="camadas">
+            <h2>As 4 camadas no seu sistema</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Camada</th>
+                        <th>Responsabilidade</th>
+                        <th>Exemplos no projeto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge entities">Entities</span></td>
+                        <td>Modela conceitos do dominio e suas regras mais centrais</td>
+                        <td>Aluno, Trabalho, Nota</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge usecases">Use Cases</span></td>
+                        <td>Coordena operacoes da aplicacao e define contratos de entrada e saida</td>
+                        <td>CadastrarTrabalhoUseCase, AvaliarTrabalhoUseCase, ConsultarMediaUseCase</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge adapters">Interface Adapters</span></td>
+                        <td>Traduz entrada e saida entre casos de uso e mundo externo</td>
+                        <td>AvaliacaoController, ConsolePresenter, Gateways em memoria</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge frameworks">Frameworks &amp; Drivers</span></td>
+                        <td>Faz composicao, inicializacao e integra detalhes de infraestrutura</td>
+                        <td>Main.java e mecanismos concretos de execucao</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pre><code>src/
+├── entities/
+│   ├── Aluno.java
+│   ├── Nota.java
+│   └── Trabalho.java
+├── usecases/
+│   ├── avaliartrabalho/
+│   ├── cadastrartrabalho/
+│   ├── consultarmedia/
+│   └── gateways/
+├── adapters/
+│   ├── controllers/
+│   ├── gateways/
+│   └── presenters/
+└── frameworks/
+    └── Main.java</code></pre>
+        </section>
+
+        <section id="fluxo">
+            <h2>Fluxo da aplicacao</h2>
+
+            <p>
+                O fluxo abaixo mostra como o sistema de avaliacao se movimenta pela arquitetura
+                sem quebrar a regra de dependencia.
+            </p>
+
+            <div class="mermaid">
+sequenceDiagram
+    actor Usuario
+    participant Main as Main
+    participant Controller as AvaliacaoController
+    participant UseCase as AvaliarTrabalhoUseCase
+    participant Gateway as TrabalhoGatewayMemoria
+    participant Entity as Trabalho / Nota
+    participant Presenter as ConsolePresenter
+
+    Usuario-&gt;&gt;Main: inicia o sistema
+    Main-&gt;&gt;Controller: injeta dependencias
+    Usuario-&gt;&gt;Controller: avaliar trabalho
+    Controller-&gt;&gt;UseCase: executar(input)
+    UseCase-&gt;&gt;Gateway: buscarPorId(trabalhoId)
+    Gateway--&gt;&gt;UseCase: Trabalho
+    UseCase-&gt;&gt;Entity: adicionarNota() e calcularMedia()
+    Entity--&gt;&gt;UseCase: estado atualizado
+    UseCase-&gt;&gt;Gateway: salvar(trabalho)
+    UseCase--&gt;&gt;Controller: output
+    Controller-&gt;&gt;Presenter: apresentar resultado
+    Presenter--&gt;&gt;Usuario: saida formatada
+            </div>
+
+            <div class="info-box solution">
+                <h4>Leitura correta do fluxo</h4>
                 <ul>
-                    <li>Camadas internas definem <strong>interfaces</strong></li>
-                    <li>Camadas externas <strong>implementam</strong> essas interfaces</li>
-                    <li>Isso faz as camadas externas dependerem das internas!</li>
+                    <li>O <strong>Main</strong> apenas monta os objetos e injeta dependencias</li>
+                    <li>O <strong>Controller</strong> converte requisicao em input</li>
+                    <li>O <strong>Use Case</strong> coordena a operacao</li>
+                    <li>A <strong>Entity</strong> aplica a regra de negocio</li>
+                    <li>O <strong>Presenter</strong> cuida da forma de exibicao</li>
                 </ul>
-                
-                <div class="success-box">
-                    <h4>✅ Exemplo em nosso sistema:</h4>
-                    <p><code>IAlunoGateway</code> é DEFINIDA nos Use Cases (camada 2)</p>
-                    <p><code>AlunoGatewayMemoria</code> IMPLEMENTA essa interface (camada 3)</p>
-                    <p>Resultado: Adapters dependem de Use Cases, não o contrário! 🎉</p>
-                </div>
-            </section>
-            
-            <!-- SEÇÃO 3: AS 4 CAMADAS -->
-            <section id="camadas">
-                <h2>📐 AS 4 CAMADAS DA CLEAN ARCHITECTURE</h2>
-                
-                <h3>🟡 Camada 1: ENTITIES (Enterprise Business Rules)</h3>
-                <div class="info-box">
-                    <h4>Responsabilidade:</h4>
-                    <p>Encapsula as regras de negócio mais críticas e fundamentais da empresa. São as regras que existiriam mesmo sem um sistema de software.</p>
-                    
-                    <h4>Características:</h4>
-                    <ul>
-                        <li>Não depende de NADA (centro do círculo)</li>
-                        <li>Contém objetos de negócio fundamentais</li>
-                        <li>Mudanças nesta camada são raras</li>
-                        <li>Pode ser compartilhada entre múltiplas aplicações</li>
-                    </ul>
-                    
-                    <h4>Exemplos no nosso sistema:</h4>
-                    <ul>
-                        <li><code>Aluno</code> - Regra: nome não pode ser vazio</li>
-                        <li><code>Nota</code> - Regra: nota deve estar entre 0 e 10</li>
-                        <li><code>Trabalho</code> - Regra: cálculo de média</li>
-                    </ul>
-                </div>
-                
-                <h3>🟢 Camada 2: USE CASES (Application Business Rules)</h3>
-                <div class="info-box">
-                    <h4>Responsabilidade:</h4>
-                    <p>Orquestra o fluxo de dados entre Entities e o mundo externo. Contém as regras específicas desta aplicação.</p>
-                    
-                    <h4>Características:</h4>
-                    <ul>
-                        <li>Depende apenas de Entities</li>
-                        <li>Cada Use Case é uma classe separada (princípio SRP)</li>
-                        <li>Define interfaces de Gateways (inversão de dependência)</li>
-                        <li>Usa DTOs (Input/Output) nas fronteiras</li>
-                    </ul>
-                    
-                    <h4>Exemplos no nosso sistema:</h4>
-                    <ul>
-                        <li><code>CadastrarTrabalhoUseCase</code> - Orquestra cadastro de trabalho</li>
-                        <li><code>AvaliarTrabalhoUseCase</code> - Orquestra avaliação</li>
-                        <li><code>ConsultarMediaUseCase</code> - Orquestra consulta</li>
-                    </ul>
-                </div>
-                
-                <h3>🟠 Camada 3: INTERFACE ADAPTERS</h3>
-                <div class="info-box">
-                    <h4>Responsabilidade:</h4>
-                    <p>Converte dados entre o formato dos Use Cases e o formato externo. Adaptadores que traduzem entre camadas.</p>
-                    
-                    <h4>Três tipos de Adapters:</h4>
-                    <ul>
-                        <li><strong>Controllers:</strong> Recebem requisições, criam Inputs, chamam Use Cases</li>
-                        <li><strong>Presenters:</strong> Recebem Outputs, formatam para visualização</li>
-                        <li><strong>Gateways:</strong> Implementam interfaces de persistência (definidas nos Use Cases)</li>
-                    </ul>
-                    
-                    <h4>Exemplos no nosso sistema:</h4>
-                    <ul>
-                        <li><code>AvaliacaoController</code> - Controla fluxo da aplicação</li>
-                        <li><code>ConsolePresenter</code> - Formata saída para console</li>
-                        <li><code>AlunoGatewayMemoria</code> - Implementa persistência em memória</li>
-                        <li><code>TrabalhoGatewayMemoria</code> - Implementa persistência em memória</li>
-                    </ul>
-                </div>
-                
-                <h3>🔴 Camada 4: FRAMEWORKS & DRIVERS</h3>
-                <div class="info-box">
-                    <h4>Responsabilidade:</h4>
-                    <p>Camada mais externa. Frameworks, ferramentas, drivers, e o ponto de entrada (Main).</p>
-                    
-                    <h4>Características:</h4>
-                    <ul>
-                        <li>Camada mais volátil (muda mais frequentemente)</li>
-                        <li>Contém detalhes de implementação</li>
-                        <li>Main.java faz a composição (Dependency Injection)</li>
-                        <li>Conhece TODAS as camadas (único permitido)</li>
-                    </ul>
-                    
-                    <h4>Exemplos no nosso sistema:</h4>
-                    <ul>
-                        <li><code>Main.java</code> - Ponto de entrada e DI manual</li>
-                        <li>Console I/O</li>
-                        <li>HashMap (simulando banco de dados)</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <!-- SEÇÃO 4: DIAGRAMA DE CÍRCULOS CONCÊNTRICOS -->
-            <section id="diagrama-concentric">
-                <h2>🎯 DIAGRAMA: CÍRCULOS CONCÊNTRICOS</h2>
-                
-                <p>Este diagrama mostra a estrutura completa do nosso sistema de avaliação de trabalhos em Clean Architecture:</p>
-                
-                <div class="diagram-container">
-                    <div class="mermaid">
-graph TD
-    subgraph FRAMEWORKS["🔴 FRAMEWORKS & DRIVERS (Camada 4 - Externa)"]
-        MAIN["Main.java<br/>(ponto de entrada)"]
-    end
-    
-    subgraph ADAPTERS["🟠 INTERFACE ADAPTERS (Camada 3)"]
-        CONTROLLER["AvaliacaoController<br/>(Controller)"]
-        PRESENTER["ConsolePresenter<br/>(Presenter)"]
-        GATEWAY_A["AlunoGatewayMemoria<br/>(Gateway)"]
-        GATEWAY_T["TrabalhoGatewayMemoria<br/>(Gateway)"]
-    end
-    
-    subgraph USECASES["🟢 USE CASES (Camada 2)"]
-        UC_CADASTRAR["CadastrarTrabalhoUseCase"]
-        UC_AVALIAR["AvaliarTrabalhoUseCase"]
-        UC_CONSULTAR["ConsultarMediaUseCase"]
-        IGATEWAY_A["IAlunoGateway<br/>(interface)"]
-        IGATEWAY_T["ITrabalhoGateway<br/>(interface)"]
-    end
-    
-    subgraph ENTITIES["🟡 ENTITIES (Camada 1 - Centro)"]
-        ALUNO["Aluno"]
-        TRABALHO["Trabalho"]
-        NOTA["Nota"]
-    end
-    
-    MAIN -->|"instancia e injeta"| CONTROLLER
-    MAIN -->|"instancia"| PRESENTER
-    MAIN -->|"instancia"| GATEWAY_A
-    MAIN -->|"instancia"| GATEWAY_T
-    MAIN -->|"instancia e injeta"| UC_CADASTRAR
-    
-    CONTROLLER -->|"chama"| UC_CADASTRAR
-    CONTROLLER -->|"chama"| UC_AVALIAR
-    CONTROLLER -->|"chama"| UC_CONSULTAR
-    CONTROLLER -->|"usa"| PRESENTER
-    
-    UC_CADASTRAR -->|"usa"| ALUNO
-    UC_CADASTRAR -->|"usa"| TRABALHO
-    UC_CADASTRAR -->|"usa"| IGATEWAY_A
-    UC_CADASTRAR -->|"usa"| IGATEWAY_T
-    
-    UC_AVALIAR -->|"usa"| NOTA
-    UC_AVALIAR -->|"usa"| TRABALHO
-    UC_AVALIAR -->|"usa"| IGATEWAY_T
-    
-    UC_CONSULTAR -->|"usa"| TRABALHO
-    UC_CONSULTAR -->|"usa"| IGATEWAY_T
-    
-    IGATEWAY_A -.->|"implementado por"| GATEWAY_A
-    IGATEWAY_T -.->|"implementado por"| GATEWAY_T
-    
-    style IGATEWAY_A stroke:#28a745,stroke-width:4px
-    style IGATEWAY_T stroke:#28a745,stroke-width:4px
-                    </div>
-                </div>
-                
-                <div class="info-box">
-                    <h4>🔍 Observe:</h4>
-                    <ul>
-                        <li>As <strong>setas sólidas</strong> mostram dependências diretas (sempre para dentro)</li>
-                        <li>As <strong>setas tracejadas</strong> mostram implementação de interfaces</li>
-                        <li>Interfaces (<code>IAlunoGateway</code>, <code>ITrabalhoGateway</code>) estão nos Use Cases</li>
-                        <li>Implementações (<code>AlunoGatewayMemoria</code>, <code>TrabalhoGatewayMemoria</code>) estão nos Adapters</li>
-                        <li>Isso inverte a dependência! Adapters dependem de Use Cases através das interfaces</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <!-- SEÇÃO 5: DIAGRAMAS DE SEQUÊNCIA -->
-            <section id="diagramas-sequencia">
-                <h2>🔄 DIAGRAMAS DE SEQUÊNCIA</h2>
-                
-                <h3>📋 Sequência 1: Cadastrar Trabalho</h3>
-                <div class="diagram-container">
-                    <div class="mermaid">
-sequenceDiagram
-    actor Usuario
-    participant Controller as AvaliacaoController<br/>(Interface Adapter)
-    participant UseCase as CadastrarTrabalhoUseCase<br/>(Use Case)
-    participant Gateway as AlunoGateway<br/>(Interface Adapter)
-    participant Entity as Trabalho<br/>(Entity)
-    participant Presenter as ConsolePresenter<br/>(Interface Adapter)
-    
-    Usuario->>Controller: executar()
-    Controller->>Controller: Criar Input DTO<br/>(trabalhoId, titulo, alunoId)
-    Controller->>UseCase: executar(Input)
-    
-    UseCase->>Gateway: buscarPorId(alunoId)
-    Gateway-->>UseCase: Aluno autor
-    
-    UseCase->>Entity: new Trabalho(id, titulo, autor)
-    Note over Entity: Valida regras de negócio
-    Entity-->>UseCase: trabalho criado
-    
-    UseCase->>Gateway: salvar(trabalho)
-    Gateway-->>UseCase: salvo com sucesso
-    
-    UseCase->>UseCase: Criar Output DTO
-    UseCase-->>Controller: Output
-    
-    Controller->>Presenter: apresentarCadastroTrabalho(Output)
-    Presenter->>Usuario: Exibe resultado formatado
-                    </div>
-                </div>
-                
-                <h3>⭐ Sequência 2: Avaliar Trabalho</h3>
-                <div class="diagram-container">
-                    <div class="mermaid">
-sequenceDiagram
-    actor Usuario
-    participant Controller as AvaliacaoController<br/>(Interface Adapter)
-    participant UseCase as AvaliarTrabalhoUseCase<br/>(Use Case)
-    participant GatewayT as TrabalhoGateway<br/>(Interface Adapter)
-    participant GatewayA as AlunoGateway<br/>(Interface Adapter)
-    participant Entity as Nota/Trabalho<br/>(Entities)
-    participant Presenter as ConsolePresenter<br/>(Interface Adapter)
-    
-    Usuario->>Controller: avaliarTrabalho()
-    Controller->>Controller: Criar Input DTO<br/>(trabalhoId, alunoId, nota)
-    Controller->>UseCase: executar(Input)
-    
-    UseCase->>GatewayT: buscarPorId(trabalhoId)
-    GatewayT-->>UseCase: Trabalho
-    
-    UseCase->>GatewayA: buscarPorId(alunoId)
-    GatewayA-->>UseCase: Aluno avaliador
-    
-    UseCase->>Entity: new Nota(alunoId, valor)
-    Note over Entity: Valida nota (0-10)
-    Entity-->>UseCase: nota criada
-    
-    UseCase->>Entity: trabalho.adicionarNota(nota)
-    UseCase->>Entity: trabalho.calcularMedia()
-    Note over Entity: Calcula nova média
-    Entity-->>UseCase: média calculada
-    
-    UseCase->>GatewayT: salvar(trabalho)
-    GatewayT-->>UseCase: salvo
-    
-    UseCase->>UseCase: Criar Output DTO
-    UseCase-->>Controller: Output
-    
-    Controller->>Presenter: apresentarAvaliacaoTrabalho(Output)
-    Presenter->>Usuario: Exibe resultado com nova média
-                    </div>
-                </div>
-                
-                <h3>📊 Sequência 3: Consultar Média</h3>
-                <div class="diagram-container">
-                    <div class="mermaid">
-sequenceDiagram
-    actor Usuario
-    participant Controller as AvaliacaoController<br/>(Interface Adapter)
-    participant UseCase as ConsultarMediaUseCase<br/>(Use Case)
-    participant Gateway as TrabalhoGateway<br/>(Interface Adapter)
-    participant Entity as Trabalho<br/>(Entity)
-    participant Presenter as ConsolePresenter<br/>(Interface Adapter)
-    
-    Usuario->>Controller: consultarMedia()
-    Controller->>Controller: Criar Input DTO<br/>(trabalhoId)
-    Controller->>UseCase: executar(Input)
-    
-    UseCase->>Gateway: buscarPorId(trabalhoId)
-    Gateway-->>UseCase: Trabalho
-    
-    UseCase->>Entity: trabalho.calcularMedia()
-    Note over Entity: Calcula média atual<br/>(regra de negócio)
-    Entity-->>UseCase: média
-    
-    UseCase->>Entity: trabalho.getQuantidadeAvaliacoes()
-    Entity-->>UseCase: quantidade
-    
-    UseCase->>UseCase: Criar Output DTO
-    UseCase-->>Controller: Output
-    
-    Controller->>Presenter: apresentarConsultaMedia(Output)
-    Presenter->>Usuario: Exibe média e informações
-                    </div>
-                </div>
-                
-                <div class="success-box">
-                    <h4>✅ Observe nos diagramas de sequência:</h4>
-                    <ul>
-                        <li><strong>Controller</strong> sempre cria Input DTOs e chama Use Cases</li>
-                        <li><strong>Use Cases</strong> orquestram o fluxo, mas não contêm regras de negócio</li>
-                        <li><strong>Entities</strong> contêm e executam as regras de negócio (validações, cálculos)</li>
-                        <li><strong>Gateways</strong> fornecem acesso a dados (inversão de dependência)</li>
-                        <li><strong>Presenter</strong> formata a saída (separação de responsabilidades)</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <!-- SEÇÃO 6: COMPARAÇÃO HEXAGONAL vs CLEAN -->
-            <section id="comparacao">
-                <h2>🔄 DIFERENÇAS ENTRE HEXAGONAL E CLEAN</h2>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Aspecto</th>
-                            <th>Hexagonal Architecture</th>
-                            <th>Clean Architecture</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Metáfora</strong></td>
-                            <td>Hexágono com portas (Ports)</td>
-                            <td>Círculos concêntricos</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Camadas</strong></td>
-                            <td>3 camadas: Domain, Application, Adapters</td>
-                            <td>4 camadas: Entities, Use Cases, Interface Adapters, Frameworks</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Foco</strong></td>
-                            <td>Independência de tecnologia (I/O)</td>
-                            <td>Separação de responsabilidades por camada</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Use Cases</strong></td>
-                            <td>Application Service único (ex: GerenciadorAvaliacoes)</td>
-                            <td>Classe separada por Use Case (CadastrarTrabalhoUseCase)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>DTOs</strong></td>
-                            <td>Opcional</td>
-                            <td>Fortemente recomendado (Input/Output)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Nomenclatura</strong></td>
-                            <td>Ports (input/output), Adapters (driving/driven)</td>
-                            <td>Use Cases, Gateways, Presenters, Controllers</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Regra</strong></td>
-                            <td>Inversão de Dependência (DIP)</td>
-                            <td>Regra de Dependência (sempre para dentro)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Controller</strong></td>
-                            <td>Pode ter main() no Controller</td>
-                            <td>Main separado em Frameworks & Drivers</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Saída</strong></td>
-                            <td>Controller geralmente formata saída</td>
-                            <td>Presenter separado para formatação</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Persistência</strong></td>
-                            <td>Repository (nomenclatura comum)</td>
-                            <td>Gateway (nomenclatura preferida)</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <h3>🤝 Semelhanças</h3>
-                <div class="success-box">
-                    <ul>
-                        <li>Ambas aplicam <strong>Inversão de Dependência (DIP)</strong></li>
-                        <li>Ambas usam <strong>interfaces nas fronteiras</strong></li>
-                        <li>Ambas buscam <strong>independência de frameworks</strong></li>
-                        <li>Ambas facilitam <strong>testes automatizados</strong></li>
-                        <li>Ambas protegem o <strong>domínio/negócio</strong> de detalhes técnicos</li>
-                    </ul>
-                </div>
-                
-                <h3>🤔 Quando usar cada uma?</h3>
-                <div class="info-box">
-                    <h4>Use Hexagonal Architecture quando:</h4>
-                    <ul>
-                        <li>Sistema mais simples</li>
-                        <li>Foco principal em desacoplamento tecnológico (trocar BD, UI)</li>
-                        <li>Equipe pequena, precisa de simplicidade</li>
-                        <li>Aplicações com poucos casos de uso</li>
-                    </ul>
-                    
-                    <h4>Use Clean Architecture quando:</h4>
-                    <ul>
-                        <li>Sistema complexo com muitos casos de uso</li>
-                        <li>Foco em separação clara de responsabilidades</li>
-                        <li>Equipe grande, precisa de organização rígida</li>
-                        <li>Necessidade de granularidade (um Use Case por operação)</li>
-                        <li>Projeto de longa duração que precisa de manutenibilidade</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <!-- SEÇÃO 7: FLUXO COMPLETO -->
-            <section id="fluxo-completo">
-                <h2>🔄 FLUXO COMPLETO: Main → Controller → Use Case → Gateway → Entity</h2>
-                
-                <p>Vamos acompanhar o fluxo completo de uma operação, desde o <code>Main.java</code> até as <code>Entities</code>:</p>
-                
-                <h3>📍 Passo 1: Main.java (Frameworks & Drivers)</h3>
-                <pre><code class="language-java">// Main instancia TUDO e faz a "composição"
-IAlunoGateway alunoGateway = new AlunoGatewayMemoria();
-ITrabalhoGateway trabalhoGateway = new TrabalhoGatewayMemoria();
+            </div>
+        </section>
 
-CadastrarTrabalhoUseCase useCase = new CadastrarTrabalhoUseCase(
-    trabalhoGateway,  // Injeção de dependência
-    alunoGateway      // através de interfaces
-);
+        <section id="comparacao">
+            <h2>Hexagonal x Clean Architecture</h2>
 
-ConsolePresenter presenter = new ConsolePresenter();
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Hexagonal</th>
+                        <th>Clean</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Forma visual</td>
+                        <td>Hexagono com portas e adaptadores</td>
+                        <td>Circulos concentricos</td>
+                    </tr>
+                    <tr>
+                        <td>Centro do desenho</td>
+                        <td>Core da aplicacao</td>
+                        <td>Entities e Use Cases separados</td>
+                    </tr>
+                    <tr>
+                        <td>Foco didatico</td>
+                        <td>Pontos de entrada e saida</td>
+                        <td>Politicas internas protegidas por camadas</td>
+                    </tr>
+                    <tr>
+                        <td>Organizacao</td>
+                        <td>Ports e Adapters</td>
+                        <td>Entities, Use Cases, Adapters e Frameworks</td>
+                    </tr>
+                    <tr>
+                        <td>Granularidade</td>
+                        <td>Servico de aplicacao unico e comum</td>
+                        <td>Um caso de uso por operacao e DTOs nas fronteiras</td>
+                    </tr>
+                </tbody>
+            </table>
 
-AvaliacaoController controller = new AvaliacaoController(
-    useCase, ..., presenter, alunoGateway
-);
+            <div class="info-box solution">
+                <h4>Onde a Clean Architecture leva vantagem sobre a Hexagonal</h4>
+            </div>
 
-controller.executar();  // Inicia o fluxo</code></pre>
-                
-                <h3>📍 Passo 2: Controller (Interface Adapter)</h3>
-                <pre><code class="language-java">// Controller prepara os dados e chama Use Case
-CadastrarTrabalhoInput input = new CadastrarTrabalhoInput(
-    "T001",
-    "Clean Architecture na Prática",
-    "A001"
-);
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vantagem da Clean</th>
+                        <th>Na Hexagonal (este projeto)</th>
+                        <th>Na Clean (este projeto)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Entities e Use Cases em camadas separadas</strong><br>Na Hexagonal o core mistura regras de negocio e orquestracao; na Clean cada responsabilidade tem sua camada propria.</td>
+                        <td>Tudo junto em <code>application/GerenciadorAvaliacoes.java</code> + <code>domain/model/</code> sem fronteira formal entre entidade e caso de uso</td>
+                        <td><code>entities/</code> (Aluno, Trabalho, Nota) separado de <code>usecases/</code> (AvaliarTrabalhoUseCase, CadastrarTrabalhoUseCase, ConsultarMediaUseCase)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contratos de entrada e saida por caso de uso</strong><br>Cada operacao define seus proprios DTOs, evitando servico unico com dezenas de metodos.</td>
+                        <td><code>GerenciadorAvaliacoes</code> recebe parametros primitivos diretamente nos metodos, sem DTOs dedicados</td>
+                        <td>Cada pasta de use case tem <code>Input</code> e <code>Output</code> proprios: ex. <code>AvaliarTrabalhoInput.java</code> e <code>AvaliarTrabalhoOutput.java</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Um caso de uso por classe</strong><br>Granularidade fina facilita testes e manutencao independente de cada operacao.</td>
+                        <td>Um unico servico <code>GerenciadorAvaliacoes.java</code> com todos os metodos: <code>cadastrarTrabalho()</code>, <code>avaliarTrabalho()</code>, <code>consultarMedia()</code></td>
+                        <td>Classes isoladas: <code>CadastrarTrabalhoUseCase</code>, <code>AvaliarTrabalhoUseCase</code>, <code>ConsultarMediaUseCase</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Presenter como cidadao de primeira classe</strong><br>Separacao explicita entre formatacao de saida e logica do caso de uso.</td>
+                        <td>O proprio <code>AvaliacaoController.java</code> faz <code>System.out.println</code> misturando orquestracao e apresentacao</td>
+                        <td>Presenter dedicado em <code>adapters/presenters/ConsolePresenter.java</code> &mdash; pode ser trocado por JSON, HTML etc. sem alterar use case</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Escalabilidade de organizacao</strong><br>Quatro camadas prescritas guiam onde colocar cada classe nova.</td>
+                        <td>Estrutura com apenas "dentro" (domain + application) e "fora" (adapters) &mdash; decisoes ad-hoc em projetos maiores</td>
+                        <td>Quatro camadas claras: <code>entities/</code>, <code>usecases/</code>, <code>adapters/</code> e <code>frameworks/</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 
-CadastrarTrabalhoOutput output = useCase.executar(input);
+        <section id="screaming-architecture">
+            <h2>Trecho final: Screaming Architecture</h2>
 
-presenter.apresentarCadastroTrabalho(output);</code></pre>
-                
-                <h3>📍 Passo 3: Use Case (Application Business Rules)</h3>
-                <pre><code class="language-java">// Use Case orquestra o fluxo
-public CadastrarTrabalhoOutput executar(CadastrarTrabalhoInput input) {
-    // 1. Busca aluno via Gateway (interface)
-    Aluno autor = alunoGateway.buscarPorId(input.getAlunoId());
-    
-    // 2. Cria Entity (regras de negócio são validadas)
-    Trabalho trabalho = new Trabalho(
-        input.getTrabalhoId(),
-        input.getTitulo(),
-        autor
-    );
-    
-    // 3. Salva via Gateway
-    trabalhoGateway.salvar(trabalho);
-    
-    // 4. Retorna Output
-    return CadastrarTrabalhoOutput.sucesso(...);
-}</code></pre>
-                
-                <h3>📍 Passo 4: Gateway (Interface Adapter)</h3>
-                <pre><code class="language-java">// Gateway implementa a interface definida nos Use Cases
-public class TrabalhoGatewayMemoria implements ITrabalhoGateway {
-    private Map&lt;String, Trabalho&gt; trabalhos = new HashMap&lt;&gt;();
-    
-    @Override
-    public void salvar(Trabalho trabalho) {
-        trabalhos.put(trabalho.getId(), trabalho);
-    }
-}</code></pre>
-                
-                <h3>📍 Passo 5: Entity (Enterprise Business Rules)</h3>
-                <pre><code class="language-java">// Entity contém as regras de negócio
-public class Trabalho {
-    private final String id;
-    private final String titulo;
-    private final Aluno autor;
-    private final List&lt;Nota&gt; notas;
-    
-    public Trabalho(String id, String titulo, Aluno autor) {
-        // Validações de negócio aqui
-        this.id = id;
-        this.titulo = titulo;
-        this.autor = autor;
-        this.notas = new ArrayList&lt;&gt;();
-    }
-    
-    public double calcularMedia() {
-        // REGRA DE NEGÓCIO: Cálculo de média
-        if (notas.isEmpty()) return 0.0;
-        return notas.stream()
-                    .mapToDouble(Nota::getValor)
-                    .average()
-                    .orElse(0.0);
-    }
-}</code></pre>
-                
-                <h3>📍 Passo 6: Presenter (Interface Adapter)</h3>
-                <pre><code class="language-java">// Presenter formata o Output para exibição
-public void apresentarCadastroTrabalho(CadastrarTrabalhoOutput output) {
-    System.out.println("===================================");
-    System.out.println("RESULTADO: CADASTRAR TRABALHO");
-    System.out.println("===================================");
-    System.out.println(output.getMensagem());
-    
-    if (output.isSucesso()) {
-        System.out.println("ID: " + output.getTrabalhoId());
-        System.out.println("Título: " + output.getTitulo());
-        System.out.println("Autor: " + output.getNomeAutor());
-    }
-}</code></pre>
-                
-                <div class="success-box">
-                    <h4>🎯 Inversão de Dependência em Ação</h4>
-                    <p>Observe como as dependências são invertidas:</p>
-                    <ul>
-                        <li><code>ITrabalhoGateway</code> é DEFINIDA nos Use Cases (camada 2)</li>
-                        <li><code>TrabalhoGatewayMemoria</code> IMPLEMENTA essa interface (camada 3)</li>
-                        <li>Use Case depende da INTERFACE (abstração)</li>
-                        <li>Gateway implementa a INTERFACE (concretização)</li>
-                        <li>Resultado: Camada 3 depende da Camada 2, não o contrário!</li>
-                    </ul>
+            <div class="screaming-grid">
+                <div class="quote-card">
+                    <blockquote>
+                        A arquitetura deveria gritar o nome do dominio do sistema,
+                        e nao o nome do framework usado para implementa-lo.
+                    </blockquote>
+                    <p>
+                        Ideia central inspirada por <strong>Screaming Architecture</strong>, de Uncle Bob.
+                    </p>
                 </div>
-                
-                <div class="diagram-container">
-                    <div class="mermaid">
-graph LR
-    A[Main] -->|instancia| B[Gateway Concreto]
-    A -->|injeta interface| C[Use Case]
-    C -->|depende de| D[Interface Gateway]
-    B -->|implementa| D
-    
-    style D fill:#28a745,color:#fff
-    style C fill:#667eea,color:#fff
-                    </div>
-                </div>
-            </section>
-            
-            <!-- SEÇÃO 8: EXEMPLO DE TESTE UNITÁRIO -->
-            <section id="teste-unitario">
-                <h2>🧪 EXEMPLO DE TESTE UNITÁRIO DE USE CASE</h2>
-                
-                <p>Uma das grandes vantagens da Clean Architecture é a <strong>testabilidade</strong>. Use Cases podem ser testados isoladamente com <strong>mocks</strong> dos Gateways:</p>
-                
-                <pre><code class="language-java">import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-public class CadastrarTrabalhoUseCaseTest {
-    
-    @Test
-    public void deveCadastrarTrabalhoComSucesso() {
-        // ARRANGE: Preparar
-        
-        // Mock dos Gateways (não precisamos de implementações reais!)
-        IAlunoGateway alunoGateway = mock(IAlunoGateway.class);
-        ITrabalhoGateway trabalhoGateway = mock(ITrabalhoGateway.class);
-        
-        // Configurar comportamento do mock
-        Aluno autor = new Aluno("A001", "João Silva");
-        when(alunoGateway.buscarPorId("A001")).thenReturn(autor);
-        when(trabalhoGateway.existe("T001")).thenReturn(false);
-        
-        // Instanciar Use Case (injetando mocks)
-        CadastrarTrabalhoUseCase useCase = new CadastrarTrabalhoUseCase(
-            trabalhoGateway,
-            alunoGateway
-        );
-        
-        // Criar Input
-        CadastrarTrabalhoInput input = new CadastrarTrabalhoInput(
-            "T001",
-            "Clean Architecture na Prática",
-            "A001"
-        );
-        
-        // ACT: Executar
-        CadastrarTrabalhoOutput output = useCase.executar(input);
-        
-        // ASSERT: Verificar
-        assertTrue(output.isSucesso());
-        assertEquals("T001", output.getTrabalhoId());
-        assertEquals("Clean Architecture na Prática", output.getTitulo());
-        assertEquals("João Silva", output.getNomeAutor());
-        
-        // Verificar que os mocks foram chamados corretamente
-        verify(alunoGateway, times(1)).buscarPorId("A001");
-        verify(trabalhoGateway, times(1)).existe("T001");
-        verify(trabalhoGateway, times(1)).salvar(any(Trabalho.class));
-    }
-    
-    @Test
-    public void deveRetornarErroQuandoAlunoNaoExistir() {
-        // ARRANGE
-        IAlunoGateway alunoGateway = mock(IAlunoGateway.class);
-        ITrabalhoGateway trabalhoGateway = mock(ITrabalhoGateway.class);
-        
-        // Configurar mock para retornar null (aluno não existe)
-        when(alunoGateway.buscarPorId("A999")).thenReturn(null);
-        
-        CadastrarTrabalhoUseCase useCase = new CadastrarTrabalhoUseCase(
-            trabalhoGateway,
-            alunoGateway
-        );
-        
-        CadastrarTrabalhoInput input = new CadastrarTrabalhoInput(
-            "T001",
-            "Teste",
-            "A999"  // Aluno inexistente
-        );
-        
-        // ACT
-        CadastrarTrabalhoOutput output = useCase.executar(input);
-        
-        // ASSERT
-        assertFalse(output.isSucesso());
-        assertTrue(output.getMensagem().contains("não encontrado"));
-        
-        // Verificar que salvar NÃO foi chamado
-        verify(trabalhoGateway, never()).salvar(any());
-    }
-}</code></pre>
-                
-                <div class="success-box">
-                    <h4>✅ Vantagens dos Testes em Clean Architecture:</h4>
-                    <ul>
-                        <li><strong>Use Cases testáveis isoladamente:</strong> Não precisa de banco de dados, servidor, ou UI</li>
-                        <li><strong>Mocks simples:</strong> Use Cases dependem de interfaces, fácil de mockar</li>
-                        <li><strong>Testes rápidos:</strong> Não há I/O, apenas lógica pura</li>
-                        <li><strong>Cobertura alta:</strong> Pode testar todos os cenários (sucesso, erros, validações)</li>
-                        <li><strong>Confiança:</strong> Se os testes passam, as regras de negócio estão corretas</li>
-                    </ul>
+                <div class="panel">
+                    <h4>Aplicando isso neste projeto</h4>
+                    <p>
+                        Ao abrir a estrutura da Clean Architecture, o que deveria chamar atencao primeiro
+                        nao e controller, repository ou framework. O que deveria aparecer com clareza e que
+                        o sistema trata de <strong>avaliacao de trabalhos</strong>, <strong>alunos</strong>,
+                        <strong>notas</strong> e <strong>casos de uso</strong> ligados a esse dominio.
+                    </p>
+                    <p>
+                        Em outras palavras: a pasta e a linguagem do projeto precisam revelar o problema de negocio
+                        que o software resolve. Framework e detalhe de implementacao entram depois.
+                    </p>
                 </div>
-                
-                <h3>🎯 O que mais podemos testar?</h3>
-                <ul>
-                    <li><strong>Entities:</strong> Testar regras de negócio (validações, cálculos)</li>
-                    <li><strong>Input DTOs:</strong> Testar validações de formato</li>
-                    <li><strong>Output DTOs:</strong> Testar factory methods</li>
-                    <li><strong>Gateways:</strong> Testar com banco de dados em memória (H2, SQLite)</li>
-                    <li><strong>Controllers:</strong> Testar com mocks de Use Cases</li>
-                </ul>
-            </section>
-            
-            <!-- SEÇÃO 9: CONCLUSÃO -->
-            <section id="conclusao">
-                <h2>🎓 CONCLUSÃO</h2>
-                
-                <div class="success-box">
-                    <h3>✅ O que aprendemos sobre Clean Architecture?</h3>
-                    <ul>
-                        <li>Organização em <strong>4 camadas concêntricas</strong></li>
-                        <li>A <strong>Regra de Dependência</strong> (sempre para dentro)</li>
-                        <li><strong>Use Cases granulares</strong> (um por operação)</li>
-                        <li><strong>DTOs nas fronteiras</strong> (Input/Output)</li>
-                        <li><strong>Inversão de Dependência</strong> com interfaces</li>
-                        <li><strong>Main separado</strong> na camada externa</li>
-                        <li><strong>Presenter separado</strong> do Controller</li>
-                    </ul>
+            </div>
+
+            <div class="callout-list">
+                <div class="callout-item">
+                    <h4>Quando a arquitetura grita certo</h4>
+                    <p>Pastas e nomes deixam evidente que o sistema e sobre avaliacao academica.</p>
                 </div>
-                
-                <h3>🎯 Princípios SOLID aplicados:</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Princípio</th>
-                            <th>Como é aplicado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>S - Single Responsibility</strong></td>
-                            <td>Cada Use Case faz uma coisa só. Presenter só formata. Entity só tem regras de negócio.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>O - Open/Closed</strong></td>
-                            <td>Pode adicionar novos Use Cases sem modificar existentes. Pode adicionar novos Gateways.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>L - Liskov Substitution</strong></td>
-                            <td>Qualquer implementação de <code>IAlunoGateway</code> pode substituir outra.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>I - Interface Segregation</strong></td>
-                            <td>Interfaces pequenas e específicas (IAlunoGateway, ITrabalhoGateway).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>D - Dependency Inversion</strong></td>
-                            <td>Use Cases dependem de interfaces, não de implementações. Adapters implementam interfaces.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <h3>🚀 Quando usar Clean Architecture?</h3>
-                <div class="info-box">
-                    <h4>✅ Use quando:</h4>
-                    <ul>
-                        <li>Projeto de longa duração (anos)</li>
-                        <li>Equipe grande que precisa de estrutura clara</li>
-                        <li>Muitos casos de uso diferentes</li>
-                        <li>Alta necessidade de testes automatizados</li>
-                        <li>Precisa trocar tecnologias frequentemente</li>
-                    </ul>
-                    
-                    <h4>❌ Não use quando:</h4>
-                    <ul>
-                        <li>Projeto muito simples (CRUD básico)</li>
-                        <li>Prototipo ou MVP rápido</li>
-                        <li>Equipe muito pequena (1-2 pessoas)</li>
-                        <li>Tempo de desenvolvimento curtíssimo</li>
-                    </ul>
+                <div class="callout-item">
+                    <h4>Quando a arquitetura grita errado</h4>
+                    <p>O projeto parece ser sobre web, banco, ORM, controller ou framework antes de tudo.</p>
                 </div>
-                
-                <h3>📚 Próximos passos:</h3>
-                <ol>
-                    <li>Estude o código-fonte deste projeto</li>
-                    <li>Execute e veja os resultados no console</li>
-                    <li>Tente adicionar um novo Use Case (ex: RemoverTrabalho)</li>
-                    <li>Tente trocar a implementação do Gateway (ex: usar banco de dados real)</li>
-                    <li>Escreva testes unitários para os Use Cases</li>
-                    <li>Leia o livro "Clean Architecture" de Uncle Bob</li>
-                </ol>
-            </section>
-            
-        </div>
-        
+            </div>
+        </section>
+
         <footer>
-            <h3>🏛️ Clean Architecture</h3>
-            <p>Sistema de Avaliação de Trabalhos</p>
-            <p>Desenvolvido para fins educacionais - Arquitetura de Software</p>
-            <p><small>Baseado nos conceitos de Robert C. Martin (Uncle Bob)</small></p>
+            <p>Material de apoio sobre Clean Architecture aplicado ao sistema de avaliacao.</p>
+            <p><small>Baseado nos conceitos de Robert C. Martin e alinhado ao exemplo em arquitetura hexagonal do projeto.</small></p>
         </footer>
     </div>
-    
-    <script>
-        mermaid.initialize({ 
-            startOnLoad: true,
-            theme: 'default',
-            flowchart: {
-                useMaxWidth: true,
-                htmlLabels: true,
-                curve: 'basis'
-            }
-        });
-    </script>
 </body>
 </html>
